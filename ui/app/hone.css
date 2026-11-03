@@ -1,0 +1,128 @@
+/* Hone app components on top of Crest. In the components layer so Tailwind utilities can override them. */
+
+/* Arrival animation for wizard steps and panels. Nothing bounces. */
+@keyframes hone-rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.rise {
+  animation: hone-rise var(--duration-slow) var(--ease-out) both;
+}
+.rise-2 {
+  animation: hone-rise var(--duration-slow) var(--ease-out) 60ms both;
+}
+.rise-3 {
+  animation: hone-rise var(--duration-slow) var(--ease-out) 120ms both;
+}
+
+/* Choice card: large selectable option (wizard). */
+.choice {
+  display: grid;
+  gap: var(--space-2);
+  text-align: left;
+  padding: var(--space-5);
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-card);
+  cursor: pointer;
+  transition:
+    border-color var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-base) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out);
+}
+.choice:hover {
+  border-color: var(--ink-3);
+  box-shadow: var(--shadow-2);
+}
+.choice[aria-checked="true"] {
+  border-color: var(--primary-ink);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
+.choice[aria-disabled="true"] {
+  cursor: not-allowed;
+  background: var(--surface-2);
+  border-style: dashed;
+  box-shadow: none;
+}
+
+/* Dropzone */
+.dropzone {
+  display: grid;
+  place-items: center;
+  gap: var(--space-2);
+  padding: var(--space-10) var(--space-6);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  text-align: center;
+  cursor: pointer;
+  transition:
+    border-color var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out);
+}
+.dropzone:hover,
+.dropzone[data-over="true"] {
+  border-color: var(--primary-ink);
+  background: var(--primary-soft);
+}
+
+/* Chat bubbles */
+.bubble {
+  max-width: min(72ch, 85%);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-card);
+  font-size: var(--text-body-sm);
+  line-height: var(--leading-snug);
+  white-space: pre-wrap;
+}
+.bubble--user {
+  background: var(--surface-2);
+  color: var(--ink);
+  border-bottom-left-radius: var(--radius-inner);
+}
+.bubble--agent {
+  background: var(--primary-soft);
+  color: var(--ink);
+  border: 1px solid var(--primary-line);
+  border-bottom-right-radius: var(--radius-inner);
+}
+
+/* Code block */
+.code {
+  font-family: var(--font-mono);
+  font-size: var(--text-caption);
+  line-height: 1.6;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  padding: var(--space-3) var(--space-4);
+  overflow-x: auto;
+  white-space: pre;
+}
+
+/* Progress bar */
+.bar {
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-3);
+  overflow: hidden;
+}
+.bar > span {
+  display: block;
+  height: 100%;
+  background: var(--primary);
+  border-radius: inherit;
+  transition: width var(--duration-base) var(--ease-out);
+}
+
+
+/* Fields sitting side by side align to the top even when one has help text. */
+.cr-field {
+  align-content: start;
+}

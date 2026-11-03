@@ -1,0 +1,393 @@
+conversation_id,customer_id,sender,message,created_at
+conv_1000,cust_141,customer,"Hi, which serum is best for oily skin?",2026-10-01T09:00:58Z
+conv_1000,cust_141,bot,For oily skin I'd start with the Clarity Serum: 5% niacinamide and zinc. Use 2-3 drops after cleansing.,2026-10-01T09:02:59Z
+conv_1001,cust_109,customer,Where is my order BC-20011?,2026-10-01T10:05:36Z
+conv_1001,cust_109,bot,Let me check. Order BC-20011 left our warehouse yesterday and should arrive on Thursday.,2026-10-01T10:06:20Z
+conv_1001,cust_109,customer,Great thanks,2026-10-01T10:08:13Z
+conv_1001,cust_109,bot,You're welcome. Anything else I can help with?,2026-10-01T10:11:02Z
+conv_1002,cust_164,customer,Can I use retinol if I have rosacea?,2026-10-01T11:12:16Z
+conv_1002,cust_164,bot,With rosacea it's best to ask a dermatologist before using retinol. Our Calm Barrier Cream is a gentle option meanwhile.,2026-10-01T11:12:45Z
+conv_1003,cust_155,customer,Do you ship to Switzerland?,2026-10-01T13:14:52Z
+conv_1003,cust_155,bot,"Yes, we ship to Switzerland. Delivery takes 5-7 working days.",2026-10-01T13:15:29Z
+conv_1004,cust_111,customer,My discount code doesn't work,2026-10-01T17:18:10Z
+conv_1004,cust_111,bot,Sorry about that. Which code are you using?,2026-10-01T17:20:18Z
+conv_1004,cust_111,customer,WELCOME10,2026-10-01T17:20:53Z
+conv_1004,cust_111,bot,That code is for first orders only. I can connect you with the team if you think that's wrong.,2026-10-01T17:23:37Z
+conv_1005,cust_128,customer,"Hi, which serum is best for oily skin?",2026-10-01T19:26:38Z
+conv_1005,cust_128,bot,For oily skin I'd start with the Clarity Serum: 5% niacinamide and zinc. Use 2-3 drops after cleansing.,2026-10-01T19:29:38Z
+conv_1006,cust_173,customer,Where is my order BC-20011?,2026-10-01T20:32:27Z
+conv_1006,cust_173,bot,Let me check. Order BC-20011 left our warehouse yesterday and should arrive on Thursday.,2026-10-01T20:34:28Z
+conv_1006,cust_173,customer,Great thanks,2026-10-01T20:35:00Z
+conv_1006,cust_173,bot,You're welcome. Anything else I can help with?,2026-10-01T20:36:16Z
+conv_1007,cust_171,customer,Can I use retinol if I have rosacea?,2026-10-01T21:37:10Z
+conv_1007,cust_171,bot,With rosacea it's best to ask a dermatologist before using retinol. Our Calm Barrier Cream is a gentle option meanwhile.,2026-10-01T21:38:44Z
+conv_1008,cust_118,customer,Do you ship to Switzerland?,2026-10-02T04:41:22Z
+conv_1008,cust_118,bot,"Yes, we ship to Switzerland. Delivery takes 5-7 working days.",2026-10-02T04:42:12Z
+conv_1009,cust_171,customer,My discount code doesn't work,2026-10-02T09:45:26Z
+conv_1009,cust_171,bot,Sorry about that. Which code are you using?,2026-10-02T09:46:32Z
+conv_1009,cust_171,customer,WELCOME10,2026-10-02T09:47:18Z
+conv_1009,cust_171,bot,That code is for first orders only. I can connect you with the team if you think that's wrong.,2026-10-02T09:50:06Z
+conv_1010,cust_147,customer,"Hi, which serum is best for oily skin?",2026-10-02T13:50:50Z
+conv_1010,cust_147,bot,For oily skin I'd start with the Clarity Serum: 5% niacinamide and zinc. Use 2-3 drops after cleansing.,2026-10-02T13:53:30Z
+conv_1011,cust_172,customer,Where is my order BC-20011?,2026-10-02T15:54:05Z
+conv_1011,cust_172,bot,Let me check. Order BC-20011 left our warehouse yesterday and should arrive on Thursday.,2026-10-02T15:57:03Z
+conv_1011,cust_172,customer,Great thanks,2026-10-02T15:58:15Z
+conv_1011,cust_172,bot,You're welcome. Anything else I can help with?,2026-10-02T16:00:42Z
+conv_1012,cust_154,customer,Can I use retinol if I have rosacea?,2026-10-03T01:02:22Z
+conv_1012,cust_154,bot,With rosacea it's best to ask a dermatologist before using retinol. Our Calm Barrier Cream is a gentle option meanwhile.,2026-10-03T01:04:41Z
+conv_1013,cust_146,customer,Do you ship to Switzerland?,2026-10-03T09:06:17Z
+conv_1013,cust_146,bot,"Yes, we ship to Switzerland. Delivery takes 5-7 working days.",2026-10-03T09:07:40Z
+conv_1014,cust_131,customer,My discount code doesn't work,2026-10-03T12:08:20Z
+conv_1014,cust_131,bot,Sorry about that. Which code are you using?,2026-10-03T12:11:07Z
+conv_1014,cust_131,customer,WELCOME10,2026-10-03T12:12:43Z
+conv_1014,cust_131,bot,That code is for first orders only. I can connect you with the team if you think that's wrong.,2026-10-03T12:15:17Z
+conv_1015,cust_143,customer,"Hi, which serum is best for oily skin?",2026-10-03T20:17:31Z
+conv_1015,cust_143,bot,For oily skin I'd start with the Clarity Serum: 5% niacinamide and zinc. Use 2-3 drops after cleansing.,2026-10-03T20:19:04Z
+conv_1016,cust_115,customer,Where is my order BC-20011?,2026-10-03T22:21:35Z
+conv_1016,cust_115,bot,Let me check. Order BC-20011 left our warehouse yesterday and should arrive on Thursday.,2026-10-03T22:23:42Z
+conv_1016,cust_115,customer,Great thanks,2026-10-03T22:24:44Z
+conv_1016,cust_115,bot,You're welcome. Anything else I can help with?,2026-10-03T22:26:31Z
+conv_1017,cust_162,customer,Can I use retinol if I have rosacea?,2026-10-04T01:28:38Z
+conv_1017,cust_162,bot,With rosacea it's best to ask a dermatologist before using retinol. Our Calm Barrier Cream is a gentle option meanwhile.,2026-10-04T01:29:08Z
+conv_1018,cust_171,customer,Do you ship to Switzerland?,2026-10-04T03:31:54Z
+conv_1018,cust_171,bot,"Yes, we ship to Switzerland. Delivery takes 5-7 working days.",2026-10-04T03:33:34Z
+conv_1019,cust_144,customer,My discount code doesn't work,2026-10-04T09:36:26Z
+conv_1019,cust_144,bot,Sorry about that. Which code are you using?,2026-10-04T09:38:53Z
+conv_1019,cust_144,customer,WELCOME10,2026-10-04T09:41:41Z
+conv_1019,cust_144,bot,That code is for first orders only. I can connect you with the team if you think that's wrong.,2026-10-04T09:43:57Z
+conv_1020,cust_111,customer,"Hi, which serum is best for oily skin?",2026-10-04T11:45:26Z
+conv_1020,cust_111,bot,For oily skin I'd start with the Clarity Serum: 5% niacinamide and zinc. Use 2-3 drops after cleansing.,2026-10-04T11:47:47Z
+conv_1021,cust_107,customer,Where is my order BC-20011?,2026-10-04T13:51:06Z
+conv_1021,cust_107,bot,Let me check. Order BC-20011 left our warehouse yesterday and should arrive on Thursday.,2026-10-04T13:52:45Z
+conv_1021,cust_107,customer,Great thanks,2026-10-04T13:55:50Z
+conv_1021,cust_107,bot,You're welcome. Anything else I can help with?,2026-10-04T13:58:37Z
+conv_1022,cust_136,customer,Can I use retinol if I have rosacea?,2026-10-04T22:00:35Z
+conv_1022,cust_136,bot,With rosacea it's best to ask a dermatologist before using retinol. Our Calm Barrier Cream is a gentle option meanwhile.,2026-10-04T22:03:46Z
+conv_1023,cust_102,customer,Do you ship to Switzerland?,2026-10-05T04:06:04Z
+conv_1023,cust_102,bot,"Yes, we ship to Switzerland. Delivery takes 5-7 working days.",2026-10-05T04:07:54Z
+conv_1024,cust_178,customer,My discount code doesn't work,2026-10-05T07:08:43Z
+conv_1024,cust_178,bot,Sorry about that. Which code are you using?,2026-10-05T07:11:09Z
+conv_1024,cust_178,customer,WELCOME10,2026-10-05T07:11:44Z
+conv_1024,cust_178,bot,That code is for first orders only. I can connect you with the team if you think that's wrong.,2026-10-05T07:12:59Z
+conv_1025,cust_116,customer,"Hi, which serum is best for oily skin?",2026-10-05T12:14:22Z
+conv_1025,cust_116,bot,For oily skin I'd start with the Clarity Serum: 5% niacinamide and zinc. Use 2-3 drops after cleansing.,2026-10-05T12:16:23Z
+conv_1026,cust_163,customer,Where is my order BC-20011?,2026-10-05T19:17:03Z
+conv_1026,cust_163,bot,Let me check. Order BC-20011 left our warehouse yesterday and should arrive on Thursday.,2026-10-05T19:18:05Z
+conv_1026,cust_163,customer,Great thanks,2026-10-05T19:20:19Z
+conv_1026,cust_163,bot,You're welcome. Anything else I can help with?,2026-10-05T19:22:21Z
+conv_1027,cust_135,customer,Can I use retinol if I have rosacea?,2026-10-06T04:23:16Z
+conv_1027,cust_135,bot,With rosacea it's best to ask a dermatologist before using retinol. Our Calm Barrier Cream is a gentle option meanwhile.,2026-10-06T04:25:26Z
+conv_1028,cust_135,customer,Do you ship to Switzerland?,2026-10-06T13:28:46Z
+conv_1028,cust_135,bot,"Yes, we ship to Switzerland. Delivery takes 5-7 working days.",2026-10-06T13:30:52Z
+conv_1029,cust_148,customer,My discount code doesn't work,2026-10-06T19:32:11Z
+conv_1029,cust_148,bot,Sorry about that. Which code are you using?,2026-10-06T19:33:09Z
+conv_1029,cust_148,customer,WELCOME10,2026-10-06T19:33:50Z
+conv_1029,cust_148,bot,That code is for first orders only. I can connect you with the team if you think that's wrong.,2026-10-06T19:34:55Z
+conv_1030,cust_129,customer,"Hi, which serum is best for oily skin?",2026-10-06T22:38:03Z
+conv_1030,cust_129,bot,For oily skin I'd start with the Clarity Serum: 5% niacinamide and zinc. Use 2-3 drops after cleansing.,2026-10-06T22:39:22Z
+conv_1031,cust_162,customer,Where is my order BC-20011?,2026-10-06T23:42:12Z
+conv_1031,cust_162,bot,Let me check. Order BC-20011 left our warehouse yesterday and should arrive on Thursday.,2026-10-06T23:43:18Z
+conv_1031,cust_162,customer,Great thanks,2026-10-06T23:44:45Z
+conv_1031,cust_162,bot,You're welcome. Anything else I can help with?,2026-10-06T23:46:17Z
+conv_1032,cust_118,customer,Can I use retinol if I have rosacea?,2026-10-07T00:48:24Z
+conv_1032,cust_118,bot,With rosacea it's best to ask a dermatologist before using retinol. Our Calm Barrier Cream is a gentle option meanwhile.,2026-10-07T00:51:00Z
+conv_1033,cust_178,customer,Do you ship to Switzerland?,2026-10-07T06:53:44Z
+conv_1033,cust_178,bot,"Yes, we ship to Switzerland. Delivery takes 5-7 working days.",2026-10-07T06:55:25Z
+conv_1034,cust_165,customer,My discount code doesn't work,2026-10-07T09:58:23Z
+conv_1034,cust_165,bot,Sorry about that. Which code are you using?,2026-10-07T10:01:30Z
+conv_1034,cust_165,customer,WELCOME10,2026-10-07T10:04:43Z
+conv_1034,cust_165,bot,That code is for first orders only. I can connect you with the team if you think that's wrong.,2026-10-07T10:05:16Z
+conv_1035,cust_171,customer,"Hi, which serum is best for oily skin?",2026-10-07T18:07:16Z
+conv_1035,cust_171,bot,For oily skin I'd start with the Clarity Serum: 5% niacinamide and zinc. Use 2-3 drops after cleansing.,2026-10-07T18:09:17Z
+conv_1036,cust_150,customer,Where is my order BC-20011?,2026-10-08T01:10:03Z
+conv_1036,cust_150,bot,Let me check. Order BC-20011 left our warehouse yesterday and should arrive on Thursday.,2026-10-08T01:12:26Z
+conv_1036,cust_150,customer,Great thanks,2026-10-08T01:15:28Z
+conv_1036,cust_150,bot,You're welcome. Anything else I can help with?,2026-10-08T01:17:30Z
+conv_1037,cust_124,customer,Can I use retinol if I have rosacea?,2026-10-08T02:18:07Z
+conv_1037,cust_124,bot,With rosacea it's best to ask a dermatologist before using retinol. Our Calm Barrier Cream is a gentle option meanwhile.,2026-10-08T02:19:20Z
+conv_1038,cust_120,customer,Do you ship to Switzerland?,2026-10-08T10:20:08Z
+conv_1038,cust_120,bot,"Yes, we ship to Switzerland. Delivery takes 5-7 working days.",2026-10-08T10:21:55Z
+conv_1039,cust_113,customer,My discount code doesn't work,2026-10-08T11:22:15Z
+conv_1039,cust_113,bot,Sorry about that. Which code are you using?,2026-10-08T11:25:00Z
+conv_1039,cust_113,customer,WELCOME10,2026-10-08T11:25:58Z
+conv_1039,cust_113,bot,That code is for first orders only. I can connect you with the team if you think that's wrong.,2026-10-08T11:28:35Z
+conv_1040,cust_146,customer,"Hi, which serum is best for oily skin?",2026-10-08T13:31:32Z
+conv_1040,cust_146,bot,For oily skin I'd start with the Clarity Serum: 5% niacinamide and zinc. Use 2-3 drops after cleansing.,2026-10-08T13:31:58Z
+conv_1041,cust_126,customer,Where is my order BC-20011?,2026-10-08T15:34:55Z
+conv_1041,cust_126,bot,Let me check. Order BC-20011 left our warehouse yesterday and should arrive on Thursday.,2026-10-08T15:36:51Z
+conv_1041,cust_126,customer,Great thanks,2026-10-08T15:37:49Z
+conv_1041,cust_126,bot,You're welcome. Anything else I can help with?,2026-10-08T15:40:51Z
+conv_1042,cust_144,customer,Can I use retinol if I have rosacea?,2026-10-08T20:43:45Z
+conv_1042,cust_144,bot,With rosacea it's best to ask a dermatologist before using retinol. Our Calm Barrier Cream is a gentle option meanwhile.,2026-10-08T20:45:38Z
+conv_1043,cust_115,customer,Do you ship to Switzerland?,2026-10-09T04:46:27Z
+conv_1043,cust_115,bot,"Yes, we ship to Switzerland. Delivery takes 5-7 working days.",2026-10-09T04:48:51Z
+conv_1044,cust_161,customer,My discount code doesn't work,2026-10-09T12:51:14Z
+conv_1044,cust_161,bot,Sorry about that. Which code are you using?,2026-10-09T12:52:53Z
+conv_1044,cust_161,customer,WELCOME10,2026-10-09T12:53:34Z
+conv_1044,cust_161,bot,That code is for first orders only. I can connect you with the team if you think that's wrong.,2026-10-09T12:54:30Z
+conv_1045,cust_143,customer,"Hi, which serum is best for oily skin?",2026-10-09T14:55:57Z
+conv_1045,cust_143,bot,For oily skin I'd start with the Clarity Serum: 5% niacinamide and zinc. Use 2-3 drops after cleansing.,2026-10-09T14:58:19Z
+conv_1046,cust_166,customer,Where is my order BC-20011?,2026-10-09T17:58:44Z
+conv_1046,cust_166,bot,Let me check. Order BC-20011 left our warehouse yesterday and should arrive on Thursday.,2026-10-09T17:59:56Z
+conv_1046,cust_166,customer,Great thanks,2026-10-09T18:02:31Z
+conv_1046,cust_166,bot,You're welcome. Anything else I can help with?,2026-10-09T18:04:23Z
+conv_1047,cust_169,customer,Can I use retinol if I have rosacea?,2026-10-09T21:04:49Z
+conv_1047,cust_169,bot,With rosacea it's best to ask a dermatologist before using retinol. Our Calm Barrier Cream is a gentle option meanwhile.,2026-10-09T21:07:24Z
+conv_1048,cust_111,customer,Do you ship to Switzerland?,2026-10-10T02:10:42Z
+conv_1048,cust_111,bot,"Yes, we ship to Switzerland. Delivery takes 5-7 working days.",2026-10-10T02:12:08Z
+conv_1049,cust_146,customer,My discount code doesn't work,2026-10-10T11:13:10Z
+conv_1049,cust_146,bot,Sorry about that. Which code are you using?,2026-10-10T11:15:01Z
+conv_1049,cust_146,customer,WELCOME10,2026-10-10T11:16:18Z
+conv_1049,cust_146,bot,That code is for first orders only. I can connect you with the team if you think that's wrong.,2026-10-10T11:18:54Z
+conv_1050,cust_164,customer,"Hi, which serum is best for oily skin?",2026-10-10T20:20:38Z
+conv_1050,cust_164,bot,For oily skin I'd start with the Clarity Serum: 5% niacinamide and zinc. Use 2-3 drops after cleansing.,2026-10-10T20:23:40Z
+conv_1051,cust_178,customer,Where is my order BC-20011?,2026-10-11T00:24:49Z
+conv_1051,cust_178,bot,Let me check. Order BC-20011 left our warehouse yesterday and should arrive on Thursday.,2026-10-11T00:26:10Z
+conv_1051,cust_178,customer,Great thanks,2026-10-11T00:28:12Z
+conv_1051,cust_178,bot,You're welcome. Anything else I can help with?,2026-10-11T00:29:30Z
+conv_1052,cust_166,customer,Can I use retinol if I have rosacea?,2026-10-11T04:31:56Z
+conv_1052,cust_166,bot,With rosacea it's best to ask a dermatologist before using retinol. Our Calm Barrier Cream is a gentle option meanwhile.,2026-10-11T04:33:47Z
+conv_1053,cust_103,customer,Do you ship to Switzerland?,2026-10-11T05:35:18Z
+conv_1053,cust_103,bot,"Yes, we ship to Switzerland. Delivery takes 5-7 working days.",2026-10-11T05:37:38Z
+conv_1054,cust_124,customer,My discount code doesn't work,2026-10-11T10:40:55Z
+conv_1054,cust_124,bot,Sorry about that. Which code are you using?,2026-10-11T10:43:49Z
+conv_1054,cust_124,customer,WELCOME10,2026-10-11T10:45:37Z
+conv_1054,cust_124,bot,That code is for first orders only. I can connect you with the team if you think that's wrong.,2026-10-11T10:47:51Z
+conv_1055,cust_146,customer,"Hi, which serum is best for oily skin?",2026-10-11T16:48:31Z
+conv_1055,cust_146,bot,For oily skin I'd start with the Clarity Serum: 5% niacinamide and zinc. Use 2-3 drops after cleansing.,2026-10-11T16:49:47Z
+conv_1056,cust_129,customer,Where is my order BC-20011?,2026-10-11T18:52:07Z
+conv_1056,cust_129,bot,Let me check. Order BC-20011 left our warehouse yesterday and should arrive on Thursday.,2026-10-11T18:53:17Z
+conv_1056,cust_129,customer,Great thanks,2026-10-11T18:55:03Z
+conv_1056,cust_129,bot,You're welcome. Anything else I can help with?,2026-10-11T18:56:15Z
+conv_1057,cust_179,customer,Can I use retinol if I have rosacea?,2026-10-12T02:59:11Z
+conv_1057,cust_179,bot,With rosacea it's best to ask a dermatologist before using retinol. Our Calm Barrier Cream is a gentle option meanwhile.,2026-10-12T02:59:31Z
+conv_1058,cust_144,customer,Do you ship to Switzerland?,2026-10-12T11:02:35Z
+conv_1058,cust_144,bot,"Yes, we ship to Switzerland. Delivery takes 5-7 working days.",2026-10-12T11:03:16Z
+conv_1059,cust_149,customer,My discount code doesn't work,2026-10-12T13:04:27Z
+conv_1059,cust_149,bot,Sorry about that. Which code are you using?,2026-10-12T13:06:49Z
+conv_1059,cust_149,customer,WELCOME10,2026-10-12T13:07:54Z
+conv_1059,cust_149,bot,That code is for first orders only. I can connect you with the team if you think that's wrong.,2026-10-12T13:10:05Z
+conv_1060,cust_111,customer,"Hi, which serum is best for oily skin?",2026-10-12T19:12:06Z
+conv_1060,cust_111,bot,For oily skin I'd start with the Clarity Serum: 5% niacinamide and zinc. Use 2-3 drops after cleansing.,2026-10-12T19:14:24Z
+conv_1061,cust_110,customer,Where is my order BC-20011?,2026-10-13T02:15:24Z
+conv_1061,cust_110,bot,Let me check. Order BC-20011 left our warehouse yesterday and should arrive on Thursday.,2026-10-13T02:16:27Z
+conv_1061,cust_110,customer,Great thanks,2026-10-13T02:17:19Z
+conv_1061,cust_110,bot,You're welcome. Anything else I can help with?,2026-10-13T02:17:46Z
+conv_1062,cust_175,customer,Can I use retinol if I have rosacea?,2026-10-13T05:20:05Z
+conv_1062,cust_175,bot,With rosacea it's best to ask a dermatologist before using retinol. Our Calm Barrier Cream is a gentle option meanwhile.,2026-10-13T05:23:12Z
+conv_1063,cust_178,customer,Do you ship to Switzerland?,2026-10-13T08:26:04Z
+conv_1063,cust_178,bot,"Yes, we ship to Switzerland. Delivery takes 5-7 working days.",2026-10-13T08:28:25Z
+conv_1064,cust_119,customer,My discount code doesn't work,2026-10-13T14:31:05Z
+conv_1064,cust_119,bot,Sorry about that. Which code are you using?,2026-10-13T14:33:45Z
+conv_1064,cust_119,customer,WELCOME10,2026-10-13T14:34:38Z
+conv_1064,cust_119,bot,That code is for first orders only. I can connect you with the team if you think that's wrong.,2026-10-13T14:35:03Z
+conv_1065,cust_113,customer,"Hi, which serum is best for oily skin?",2026-10-13T15:37:37Z
+conv_1065,cust_113,bot,For oily skin I'd start with the Clarity Serum: 5% niacinamide and zinc. Use 2-3 drops after cleansing.,2026-10-13T15:38:32Z
+conv_1066,cust_124,customer,Where is my order BC-20011?,2026-10-13T22:39:46Z
+conv_1066,cust_124,bot,Let me check. Order BC-20011 left our warehouse yesterday and should arrive on Thursday.,2026-10-13T22:40:13Z
+conv_1066,cust_124,customer,Great thanks,2026-10-13T22:41:37Z
+conv_1066,cust_124,bot,You're welcome. Anything else I can help with?,2026-10-13T22:42:51Z
+conv_1067,cust_164,customer,Can I use retinol if I have rosacea?,2026-10-14T03:44:12Z
+conv_1067,cust_164,bot,With rosacea it's best to ask a dermatologist before using retinol. Our Calm Barrier Cream is a gentle option meanwhile.,2026-10-14T03:47:02Z
+conv_1068,cust_133,customer,Do you ship to Switzerland?,2026-10-14T09:49:41Z
+conv_1068,cust_133,bot,"Yes, we ship to Switzerland. Delivery takes 5-7 working days.",2026-10-14T09:51:48Z
+conv_1069,cust_107,customer,My discount code doesn't work,2026-10-14T12:53:38Z
+conv_1069,cust_107,bot,Sorry about that. Which code are you using?,2026-10-14T12:55:55Z
+conv_1069,cust_107,customer,WELCOME10,2026-10-14T12:59:04Z
+conv_1069,cust_107,bot,That code is for first orders only. I can connect you with the team if you think that's wrong.,2026-10-14T13:01:53Z
+conv_1070,cust_153,customer,"Hi, which serum is best for oily skin?",2026-10-14T22:04:21Z
+conv_1070,cust_153,bot,For oily skin I'd start with the Clarity Serum: 5% niacinamide and zinc. Use 2-3 drops after cleansing.,2026-10-14T22:05:14Z
+conv_1071,cust_119,customer,Where is my order BC-20011?,2026-10-15T07:07:48Z
+conv_1071,cust_119,bot,Let me check. Order BC-20011 left our warehouse yesterday and should arrive on Thursday.,2026-10-15T07:10:18Z
+conv_1071,cust_119,customer,Great thanks,2026-10-15T07:10:42Z
+conv_1071,cust_119,bot,You're welcome. Anything else I can help with?,2026-10-15T07:12:54Z
+conv_1072,cust_177,customer,Can I use retinol if I have rosacea?,2026-10-15T10:13:15Z
+conv_1072,cust_177,bot,With rosacea it's best to ask a dermatologist before using retinol. Our Calm Barrier Cream is a gentle option meanwhile.,2026-10-15T10:14:13Z
+conv_1073,cust_118,customer,Do you ship to Switzerland?,2026-10-15T13:16:34Z
+conv_1073,cust_118,bot,"Yes, we ship to Switzerland. Delivery takes 5-7 working days.",2026-10-15T13:19:32Z
+conv_1074,cust_171,customer,My discount code doesn't work,2026-10-15T15:20:07Z
+conv_1074,cust_171,bot,Sorry about that. Which code are you using?,2026-10-15T15:21:50Z
+conv_1074,cust_171,customer,WELCOME10,2026-10-15T15:25:04Z
+conv_1074,cust_171,bot,That code is for first orders only. I can connect you with the team if you think that's wrong.,2026-10-15T15:27:36Z
+conv_1075,cust_171,customer,"Hi, which serum is best for oily skin?",2026-10-16T00:29:59Z
+conv_1075,cust_171,bot,For oily skin I'd start with the Clarity Serum: 5% niacinamide and zinc. Use 2-3 drops after cleansing.,2026-10-16T00:30:46Z
+conv_1076,cust_107,customer,Where is my order BC-20011?,2026-10-16T09:32:09Z
+conv_1076,cust_107,bot,Let me check. Order BC-20011 left our warehouse yesterday and should arrive on Thursday.,2026-10-16T09:33:17Z
+conv_1076,cust_107,customer,Great thanks,2026-10-16T09:34:47Z
+conv_1076,cust_107,bot,You're welcome. Anything else I can help with?,2026-10-16T09:35:17Z
+conv_1077,cust_164,customer,Can I use retinol if I have rosacea?,2026-10-16T11:37:32Z
+conv_1077,cust_164,bot,With rosacea it's best to ask a dermatologist before using retinol. Our Calm Barrier Cream is a gentle option meanwhile.,2026-10-16T11:40:15Z
+conv_1078,cust_108,customer,Do you ship to Switzerland?,2026-10-16T12:42:28Z
+conv_1078,cust_108,bot,"Yes, we ship to Switzerland. Delivery takes 5-7 working days.",2026-10-16T12:44:11Z
+conv_1079,cust_177,customer,My discount code doesn't work,2026-10-16T21:46:42Z
+conv_1079,cust_177,bot,Sorry about that. Which code are you using?,2026-10-16T21:47:53Z
+conv_1079,cust_177,customer,WELCOME10,2026-10-16T21:51:10Z
+conv_1079,cust_177,bot,That code is for first orders only. I can connect you with the team if you think that's wrong.,2026-10-16T21:52:40Z
+conv_1080,cust_165,customer,"Hi, which serum is best for oily skin?",2026-10-17T05:55:16Z
+conv_1080,cust_165,bot,For oily skin I'd start with the Clarity Serum: 5% niacinamide and zinc. Use 2-3 drops after cleansing.,2026-10-17T05:57:38Z
+conv_1081,cust_131,customer,Where is my order BC-20011?,2026-10-17T15:00:56Z
+conv_1081,cust_131,bot,Let me check. Order BC-20011 left our warehouse yesterday and should arrive on Thursday.,2026-10-17T15:03:29Z
+conv_1081,cust_131,customer,Great thanks,2026-10-17T15:04:55Z
+conv_1081,cust_131,bot,You're welcome. Anything else I can help with?,2026-10-17T15:07:38Z
+conv_1082,cust_157,customer,Can I use retinol if I have rosacea?,2026-10-17T19:08:33Z
+conv_1082,cust_157,bot,With rosacea it's best to ask a dermatologist before using retinol. Our Calm Barrier Cream is a gentle option meanwhile.,2026-10-17T19:10:39Z
+conv_1083,cust_150,customer,Do you ship to Switzerland?,2026-10-17T21:12:52Z
+conv_1083,cust_150,bot,"Yes, we ship to Switzerland. Delivery takes 5-7 working days.",2026-10-17T21:14:32Z
+conv_1084,cust_130,customer,My discount code doesn't work,2026-10-17T23:16:41Z
+conv_1084,cust_130,bot,Sorry about that. Which code are you using?,2026-10-17T23:17:19Z
+conv_1084,cust_130,customer,WELCOME10,2026-10-17T23:18:33Z
+conv_1084,cust_130,bot,That code is for first orders only. I can connect you with the team if you think that's wrong.,2026-10-17T23:21:44Z
+conv_1085,cust_115,customer,"Hi, which serum is best for oily skin?",2026-10-18T04:22:43Z
+conv_1085,cust_115,bot,For oily skin I'd start with the Clarity Serum: 5% niacinamide and zinc. Use 2-3 drops after cleansing.,2026-10-18T04:25:47Z
+conv_1086,cust_118,customer,Where is my order BC-20011?,2026-10-18T10:27:11Z
+conv_1086,cust_118,bot,Let me check. Order BC-20011 left our warehouse yesterday and should arrive on Thursday.,2026-10-18T10:28:06Z
+conv_1086,cust_118,customer,Great thanks,2026-10-18T10:30:25Z
+conv_1086,cust_118,bot,You're welcome. Anything else I can help with?,2026-10-18T10:31:41Z
+conv_1087,cust_150,customer,Can I use retinol if I have rosacea?,2026-10-18T12:34:05Z
+conv_1087,cust_150,bot,With rosacea it's best to ask a dermatologist before using retinol. Our Calm Barrier Cream is a gentle option meanwhile.,2026-10-18T12:35:06Z
+conv_1088,cust_120,customer,Do you ship to Switzerland?,2026-10-18T16:38:26Z
+conv_1088,cust_120,bot,"Yes, we ship to Switzerland. Delivery takes 5-7 working days.",2026-10-18T16:40:36Z
+conv_1089,cust_151,customer,My discount code doesn't work,2026-10-19T01:42:22Z
+conv_1089,cust_151,bot,Sorry about that. Which code are you using?,2026-10-19T01:44:29Z
+conv_1089,cust_151,customer,WELCOME10,2026-10-19T01:45:39Z
+conv_1089,cust_151,bot,That code is for first orders only. I can connect you with the team if you think that's wrong.,2026-10-19T01:47:30Z
+conv_1090,cust_111,customer,"Hi, which serum is best for oily skin?",2026-10-19T07:49:23Z
+conv_1090,cust_111,bot,For oily skin I'd start with the Clarity Serum: 5% niacinamide and zinc. Use 2-3 drops after cleansing.,2026-10-19T07:49:47Z
+conv_1091,cust_170,customer,Where is my order BC-20011?,2026-10-19T13:52:04Z
+conv_1091,cust_170,bot,Let me check. Order BC-20011 left our warehouse yesterday and should arrive on Thursday.,2026-10-19T13:54:16Z
+conv_1091,cust_170,customer,Great thanks,2026-10-19T13:57:36Z
+conv_1091,cust_170,bot,You're welcome. Anything else I can help with?,2026-10-19T13:58:00Z
+conv_1092,cust_142,customer,Can I use retinol if I have rosacea?,2026-10-19T21:00:32Z
+conv_1092,cust_142,bot,With rosacea it's best to ask a dermatologist before using retinol. Our Calm Barrier Cream is a gentle option meanwhile.,2026-10-19T21:03:31Z
+conv_1093,cust_165,customer,Do you ship to Switzerland?,2026-10-20T02:04:07Z
+conv_1093,cust_165,bot,"Yes, we ship to Switzerland. Delivery takes 5-7 working days.",2026-10-20T02:04:55Z
+conv_1094,cust_113,customer,My discount code doesn't work,2026-10-20T06:05:36Z
+conv_1094,cust_113,bot,Sorry about that. Which code are you using?,2026-10-20T06:07:03Z
+conv_1094,cust_113,customer,WELCOME10,2026-10-20T06:08:32Z
+conv_1094,cust_113,bot,That code is for first orders only. I can connect you with the team if you think that's wrong.,2026-10-20T06:09:02Z
+conv_1095,cust_134,customer,"Hi, which serum is best for oily skin?",2026-10-20T09:09:55Z
+conv_1095,cust_134,bot,For oily skin I'd start with the Clarity Serum: 5% niacinamide and zinc. Use 2-3 drops after cleansing.,2026-10-20T09:12:03Z
+conv_1096,cust_151,customer,Where is my order BC-20011?,2026-10-20T14:13:01Z
+conv_1096,cust_151,bot,Let me check. Order BC-20011 left our warehouse yesterday and should arrive on Thursday.,2026-10-20T14:15:38Z
+conv_1096,cust_151,customer,Great thanks,2026-10-20T14:18:09Z
+conv_1096,cust_151,bot,You're welcome. Anything else I can help with?,2026-10-20T14:20:55Z
+conv_1097,cust_141,customer,Can I use retinol if I have rosacea?,2026-10-20T22:21:37Z
+conv_1097,cust_141,bot,With rosacea it's best to ask a dermatologist before using retinol. Our Calm Barrier Cream is a gentle option meanwhile.,2026-10-20T22:23:08Z
+conv_1098,cust_123,customer,Do you ship to Switzerland?,2026-10-20T23:25:16Z
+conv_1098,cust_123,bot,"Yes, we ship to Switzerland. Delivery takes 5-7 working days.",2026-10-20T23:25:54Z
+conv_1099,cust_102,customer,My discount code doesn't work,2026-10-21T04:28:56Z
+conv_1099,cust_102,bot,Sorry about that. Which code are you using?,2026-10-21T04:29:38Z
+conv_1099,cust_102,customer,WELCOME10,2026-10-21T04:31:04Z
+conv_1099,cust_102,bot,That code is for first orders only. I can connect you with the team if you think that's wrong.,2026-10-21T04:31:45Z
+conv_1100,cust_108,customer,"Hi, which serum is best for oily skin?",2026-10-21T08:33:12Z
+conv_1100,cust_108,bot,For oily skin I'd start with the Clarity Serum: 5% niacinamide and zinc. Use 2-3 drops after cleansing.,2026-10-21T08:34:03Z
+conv_1101,cust_101,customer,Where is my order BC-20011?,2026-10-21T16:35:49Z
+conv_1101,cust_101,bot,Let me check. Order BC-20011 left our warehouse yesterday and should arrive on Thursday.,2026-10-21T16:38:30Z
+conv_1101,cust_101,customer,Great thanks,2026-10-21T16:40:36Z
+conv_1101,cust_101,bot,You're welcome. Anything else I can help with?,2026-10-21T16:42:04Z
+conv_1102,cust_105,customer,Can I use retinol if I have rosacea?,2026-10-21T19:44:38Z
+conv_1102,cust_105,bot,With rosacea it's best to ask a dermatologist before using retinol. Our Calm Barrier Cream is a gentle option meanwhile.,2026-10-21T19:45:59Z
+conv_1103,cust_120,customer,Do you ship to Switzerland?,2026-10-21T21:47:26Z
+conv_1103,cust_120,bot,"Yes, we ship to Switzerland. Delivery takes 5-7 working days.",2026-10-21T21:47:58Z
+conv_1104,cust_125,customer,My discount code doesn't work,2026-10-22T00:49:37Z
+conv_1104,cust_125,bot,Sorry about that. Which code are you using?,2026-10-22T00:52:37Z
+conv_1104,cust_125,customer,WELCOME10,2026-10-22T00:54:15Z
+conv_1104,cust_125,bot,That code is for first orders only. I can connect you with the team if you think that's wrong.,2026-10-22T00:56:50Z
+conv_1105,cust_137,customer,"Hi, which serum is best for oily skin?",2026-10-22T04:59:04Z
+conv_1105,cust_137,bot,For oily skin I'd start with the Clarity Serum: 5% niacinamide and zinc. Use 2-3 drops after cleansing.,2026-10-22T05:01:32Z
+conv_1106,cust_134,customer,Where is my order BC-20011?,2026-10-22T08:03:20Z
+conv_1106,cust_134,bot,Let me check. Order BC-20011 left our warehouse yesterday and should arrive on Thursday.,2026-10-22T08:03:44Z
+conv_1106,cust_134,customer,Great thanks,2026-10-22T08:05:08Z
+conv_1106,cust_134,bot,You're welcome. Anything else I can help with?,2026-10-22T08:05:37Z
+conv_1107,cust_102,customer,Can I use retinol if I have rosacea?,2026-10-22T09:08:06Z
+conv_1107,cust_102,bot,With rosacea it's best to ask a dermatologist before using retinol. Our Calm Barrier Cream is a gentle option meanwhile.,2026-10-22T09:10:47Z
+conv_1108,cust_165,customer,Do you ship to Switzerland?,2026-10-22T13:13:08Z
+conv_1108,cust_165,bot,"Yes, we ship to Switzerland. Delivery takes 5-7 working days.",2026-10-22T13:14:30Z
+conv_1109,cust_113,customer,My discount code doesn't work,2026-10-22T21:17:38Z
+conv_1109,cust_113,bot,Sorry about that. Which code are you using?,2026-10-22T21:20:44Z
+conv_1109,cust_113,customer,WELCOME10,2026-10-22T21:22:54Z
+conv_1109,cust_113,bot,That code is for first orders only. I can connect you with the team if you think that's wrong.,2026-10-22T21:26:02Z
+conv_1110,cust_169,customer,"Hi, which serum is best for oily skin?",2026-10-23T05:28:02Z
+conv_1110,cust_169,bot,For oily skin I'd start with the Clarity Serum: 5% niacinamide and zinc. Use 2-3 drops after cleansing.,2026-10-23T05:30:31Z
+conv_1111,cust_127,customer,Where is my order BC-20011?,2026-10-23T10:31:49Z
+conv_1111,cust_127,bot,Let me check. Order BC-20011 left our warehouse yesterday and should arrive on Thursday.,2026-10-23T10:33:36Z
+conv_1111,cust_127,customer,Great thanks,2026-10-23T10:34:46Z
+conv_1111,cust_127,bot,You're welcome. Anything else I can help with?,2026-10-23T10:38:06Z
+conv_1112,cust_151,customer,Can I use retinol if I have rosacea?,2026-10-23T13:39:54Z
+conv_1112,cust_151,bot,With rosacea it's best to ask a dermatologist before using retinol. Our Calm Barrier Cream is a gentle option meanwhile.,2026-10-23T13:40:27Z
+conv_1113,cust_101,customer,Do you ship to Switzerland?,2026-10-23T16:41:05Z
+conv_1113,cust_101,bot,"Yes, we ship to Switzerland. Delivery takes 5-7 working days.",2026-10-23T16:44:05Z
+conv_1114,cust_155,customer,My discount code doesn't work,2026-10-23T21:45:06Z
+conv_1114,cust_155,bot,Sorry about that. Which code are you using?,2026-10-23T21:45:40Z
+conv_1114,cust_155,customer,WELCOME10,2026-10-23T21:46:21Z
+conv_1114,cust_155,bot,That code is for first orders only. I can connect you with the team if you think that's wrong.,2026-10-23T21:49:31Z
+conv_1115,cust_164,customer,"Hi, which serum is best for oily skin?",2026-10-24T04:52:42Z
+conv_1115,cust_164,bot,For oily skin I'd start with the Clarity Serum: 5% niacinamide and zinc. Use 2-3 drops after cleansing.,2026-10-24T04:54:14Z
+conv_1116,cust_137,customer,Where is my order BC-20011?,2026-10-24T08:54:45Z
+conv_1116,cust_137,bot,Let me check. Order BC-20011 left our warehouse yesterday and should arrive on Thursday.,2026-10-24T08:57:02Z
+conv_1116,cust_137,customer,Great thanks,2026-10-24T08:58:09Z
+conv_1116,cust_137,bot,You're welcome. Anything else I can help with?,2026-10-24T08:59:09Z
+conv_1117,cust_157,customer,Can I use retinol if I have rosacea?,2026-10-24T13:59:29Z
+conv_1117,cust_157,bot,With rosacea it's best to ask a dermatologist before using retinol. Our Calm Barrier Cream is a gentle option meanwhile.,2026-10-24T14:00:56Z
+conv_1118,cust_142,customer,Do you ship to Switzerland?,2026-10-24T20:03:36Z
+conv_1118,cust_142,bot,"Yes, we ship to Switzerland. Delivery takes 5-7 working days.",2026-10-24T20:05:18Z
+conv_1119,cust_104,customer,My discount code doesn't work,2026-10-25T00:06:57Z
+conv_1119,cust_104,bot,Sorry about that. Which code are you using?,2026-10-25T00:08:12Z
+conv_1119,cust_104,customer,WELCOME10,2026-10-25T00:10:03Z
+conv_1119,cust_104,bot,That code is for first orders only. I can connect you with the team if you think that's wrong.,2026-10-25T00:11:09Z
+conv_1120,cust_142,customer,"Hi, which serum is best for oily skin?",2026-10-25T01:13:06Z
+conv_1120,cust_142,bot,For oily skin I'd start with the Clarity Serum: 5% niacinamide and zinc. Use 2-3 drops after cleansing.,2026-10-25T01:13:47Z
+conv_1121,cust_135,customer,Where is my order BC-20011?,2026-10-25T09:16:15Z
+conv_1121,cust_135,bot,Let me check. Order BC-20011 left our warehouse yesterday and should arrive on Thursday.,2026-10-25T09:19:22Z
+conv_1121,cust_135,customer,Great thanks,2026-10-25T09:20:33Z
+conv_1121,cust_135,bot,You're welcome. Anything else I can help with?,2026-10-25T09:21:56Z
+conv_1122,cust_100,customer,Can I use retinol if I have rosacea?,2026-10-25T18:22:39Z
+conv_1122,cust_100,bot,With rosacea it's best to ask a dermatologist before using retinol. Our Calm Barrier Cream is a gentle option meanwhile.,2026-10-25T18:24:06Z
+conv_1123,cust_118,customer,Do you ship to Switzerland?,2026-10-25T20:26:08Z
+conv_1123,cust_118,bot,"Yes, we ship to Switzerland. Delivery takes 5-7 working days.",2026-10-25T20:28:58Z
+conv_1124,cust_150,customer,My discount code doesn't work,2026-10-25T21:29:23Z
+conv_1124,cust_150,bot,Sorry about that. Which code are you using?,2026-10-25T21:30:59Z
+conv_1124,cust_150,customer,WELCOME10,2026-10-25T21:32:36Z
+conv_1124,cust_150,bot,That code is for first orders only. I can connect you with the team if you think that's wrong.,2026-10-25T21:35:37Z
+conv_1125,cust_110,customer,"Hi, which serum is best for oily skin?",2026-10-26T01:38:26Z
+conv_1125,cust_110,bot,For oily skin I'd start with the Clarity Serum: 5% niacinamide and zinc. Use 2-3 drops after cleansing.,2026-10-26T01:41:01Z
+conv_1126,cust_176,customer,Where is my order BC-20011?,2026-10-26T04:43:00Z
+conv_1126,cust_176,bot,Let me check. Order BC-20011 left our warehouse yesterday and should arrive on Thursday.,2026-10-26T04:44:43Z
+conv_1126,cust_176,customer,Great thanks,2026-10-26T04:47:09Z
+conv_1126,cust_176,bot,You're welcome. Anything else I can help with?,2026-10-26T04:48:07Z
+conv_1127,cust_179,customer,Can I use retinol if I have rosacea?,2026-10-26T09:51:11Z
+conv_1127,cust_179,bot,With rosacea it's best to ask a dermatologist before using retinol. Our Calm Barrier Cream is a gentle option meanwhile.,2026-10-26T09:52:08Z
+conv_1128,cust_165,customer,Do you ship to Switzerland?,2026-10-26T10:55:08Z
+conv_1128,cust_165,bot,"Yes, we ship to Switzerland. Delivery takes 5-7 working days.",2026-10-26T10:57:17Z
+conv_1129,cust_117,customer,My discount code doesn't work,2026-10-26T19:59:51Z
+conv_1129,cust_117,bot,Sorry about that. Which code are you using?,2026-10-26T20:02:20Z
+conv_1129,cust_117,customer,WELCOME10,2026-10-26T20:05:05Z
+conv_1129,cust_117,bot,That code is for first orders only. I can connect you with the team if you think that's wrong.,2026-10-26T20:05:29Z
+conv_1130,cust_110,customer,"Hi, which serum is best for oily skin?",2026-10-27T00:05:56Z
+conv_1130,cust_110,bot,For oily skin I'd start with the Clarity Serum: 5% niacinamide and zinc. Use 2-3 drops after cleansing.,2026-10-27T00:06:26Z
+conv_1131,cust_146,customer,Where is my order BC-20011?,2026-10-27T03:07:12Z
+conv_1131,cust_146,bot,Let me check. Order BC-20011 left our warehouse yesterday and should arrive on Thursday.,2026-10-27T03:09:08Z
+conv_1131,cust_146,customer,Great thanks,2026-10-27T03:11:23Z
+conv_1131,cust_146,bot,You're welcome. Anything else I can help with?,2026-10-27T03:14:05Z
+conv_1132,cust_180,customer,Can I use retinol if I have rosacea?,2026-10-27T04:14:29Z
+conv_1132,cust_180,bot,With rosacea it's best to ask a dermatologist before using retinol. Our Calm Barrier Cream is a gentle option meanwhile.,2026-10-27T04:17:29Z
+conv_1133,cust_131,customer,Do you ship to Switzerland?,2026-10-27T13:19:54Z
+conv_1133,cust_131,bot,"Yes, we ship to Switzerland. Delivery takes 5-7 working days.",2026-10-27T13:21:21Z
+conv_1134,cust_158,customer,My discount code doesn't work,2026-10-27T14:21:58Z
+conv_1134,cust_158,bot,Sorry about that. Which code are you using?,2026-10-27T14:24:26Z
+conv_1134,cust_158,customer,WELCOME10,2026-10-27T14:27:03Z
+conv_1134,cust_158,bot,That code is for first orders only. I can connect you with the team if you think that's wrong.,2026-10-27T14:27:46Z
+conv_1135,cust_108,customer,"Hi, which serum is best for oily skin?",2026-10-27T23:30:07Z
+conv_1135,cust_108,bot,For oily skin I'd start with the Clarity Serum: 5% niacinamide and zinc. Use 2-3 drops after cleansing.,2026-10-27T23:31:31Z
+conv_1136,cust_133,customer,Where is my order BC-20011?,2026-10-28T01:32:51Z
+conv_1136,cust_133,bot,Let me check. Order BC-20011 left our warehouse yesterday and should arrive on Thursday.,2026-10-28T01:34:03Z
+conv_1136,cust_133,customer,Great thanks,2026-10-28T01:35:22Z
+conv_1136,cust_133,bot,You're welcome. Anything else I can help with?,2026-10-28T01:38:28Z
+conv_1137,cust_163,customer,Can I use retinol if I have rosacea?,2026-10-28T09:40:25Z
+conv_1137,cust_163,bot,With rosacea it's best to ask a dermatologist before using retinol. Our Calm Barrier Cream is a gentle option meanwhile.,2026-10-28T09:41:04Z
+conv_1138,cust_136,customer,Do you ship to Switzerland?,2026-10-28T17:41:35Z
+conv_1138,cust_136,bot,"Yes, we ship to Switzerland. Delivery takes 5-7 working days.",2026-10-28T17:44:32Z
+conv_1139,cust_109,customer,My discount code doesn't work,2026-10-28T21:47:25Z
+conv_1139,cust_109,bot,Sorry about that. Which code are you using?,2026-10-28T21:48:22Z
+conv_1139,cust_109,customer,WELCOME10,2026-10-28T21:50:06Z
+conv_1139,cust_109,bot,That code is for first orders only. I can connect you with the team if you think that's wrong.,2026-10-28T21:51:31Z
