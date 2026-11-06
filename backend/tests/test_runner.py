@@ -193,3 +193,61 @@ def test_version_recorded_before_run_is_still_checked(db, monkeypatch):
     asyncio.run(runner.execute("r2"))
     r2 = store.get("run", "r2")
     assert r2["agentVersion"] == 2 and r2["agentChanged"] and r2["recsApplied"]
+
+
+def test_unchanged_agent_reuses_recommendations(db, monkeypatch):
+    """Run 2 on the same agent and rubric doesn't pay for new recommendations; it points to run 1's."""
+    from hone import snapshots
+
+    calls = {"n": 0}
+
+    async def rec_chat(messages, model, spend=None, **kw):
+        calls["n"] += 1
+        return '{"recommendations": [{"title": "Ban emojis", "change": "x", "target": "prompt", "why": "", "criterionIds": ["C1"]}]}'
+
+    monkeypatch.setattr(recommend, "chat", rec_chat)
+    _run(db, budget=5)
+    assert calls["n"] == 1
+    agent = {"name": "Fake", "model": "m", "prompt": "Be nice.", "tools": [], "memory": None, "kbNodes": []}
+    assert snapshots.compare(db, agent) == {"changed": False, "version": 1, "summary": None}
+
+    store.put("run", "r2", {"id": "r2", "projectId": db, "split": "dev", "k": 3, "scenarios": 6, "budgetUsd": 5,
+                            "status": "running", "costUsd": 0, "items": [], "createdAt": "2099-01-01"}, db)
+    asyncio.run(runner.execute("r2"))
+    r2 = store.get("run", "r2")
+    assert calls["n"] == 1, "no second recommendation call"
+    assert r2["agentVersion"] == 1 and not r2["agentChanged"]
+    assert r2["recommendationsFrom"] == "r1" and "haven't changed" in r2["recommendationsSkipped"]
+
+    # Change the rubric: now new advice is worth paying for.
+    crit = store.get("criteria", db) + [{"id": "C3", "text": "Greets", "kind": "judge", "status": "approved"}]
+    store.put("criteria", db, crit, db)
+    store.put("run", "r3", {"id": "r3", "projectId": db, "split": "dev", "k": 3, "scenarios": 6, "budgetUsd": 5,
+                            "status": "running", "costUsd": 0, "items": [], "createdAt": "2099-01-02"}, db)
+    asyncio.run(runner.execute("r3"))
+    assert calls["n"] == 2
+
+    changed = {**agent, "prompt": "Be nice. No emojis."}
+    cmp = snapshots.compare(db, changed)
+    assert cmp["changed"] and cmp["version"] == 2 and cmp["summary"].startswith("Prompt")
+    assert len(store.list_("snapshot", db)) == 1, "compare saves nothing"
+
+
+def test_regex_check_accepts_js_unicode_escapes_and_never_crashes():
+    from hone.rubric import run_check
+
+    spec = {"type": "regex_absent", "value": "[\\u{1F600}-\\u{1FAFF}\\u{2600}-\\u{27BF}](?<!☺)(?<!🤍)"}
+    ok = [{"role": "agent", "text": "Ciao ☺️ 🤍"}]
+    bad = [{"role": "agent", "text": "Ciao 😀"}]
+    assert run_check(spec, ok)[0] and not run_check(spec, bad)[0]
+    assert run_check({"type": "regex_absent", "value": "(unclosed"}, bad)[0]  # invalid pattern: skipped, not a crash
+
+
+def test_long_prompts_are_clipped_with_a_note_not_mid_sentence():
+    from hone.llm import clip_prompt
+
+    long = "\n".join(f"Rule {i}: be kind to the customer at all times." for i in range(2000))
+    out = clip_prompt(long, 1000)
+    assert out.endswith("characters.]") and "Hone stopped reading here" in out
+    assert out.split("\n\n[Hone")[0].endswith("times."), "cut at a line break"
+    assert clip_prompt("short") == "short"

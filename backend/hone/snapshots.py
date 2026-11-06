@@ -102,6 +102,17 @@ def latest(project_id: str) -> dict | None:
     return max(snaps, key=lambda s: s["version"]) if snaps else None
 
 
+def compare(project_id: str, agent: dict) -> dict:
+    """Has the agent changed since the last version Hone saved? Reads only, records nothing."""
+    fp = fingerprint(agent)
+    prev = latest(project_id)
+    if prev and prev["hash"] == digest(fp):
+        return {"changed": False, "version": prev["version"], "summary": None}
+    d = diff(prev["agent"] if prev else None, fp)
+    return {"changed": True, "version": (prev["version"] + 1) if prev else 1,
+            "summary": summarize(d), "previousVersion": prev["version"] if prev else None}
+
+
 def record(project_id: str, agent: dict) -> dict:
     """Return the snapshot for this agent, creating a new version only if it changed."""
     fp = fingerprint(agent)

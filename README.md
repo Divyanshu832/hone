@@ -197,8 +197,9 @@ Without Supabase, accounts switch off and each browser simply keeps its own proj
 Hone can be hosted publicly without paying for anyone's runs. Each person pastes their own OpenRouter
 and/or TypeSafe key in **Settings**:
 
-- Keys stay in **their browser** (forgotten when the tab closes, unless they tick "Remember on this device").
-- They're sent with each request and used only for that request. **The server never saves them.**
+- Signed in, the keys are saved for **their organization**, so the whole team runs with them. The page only
+  ever shows them masked.
+- Without accounts, keys stay in the browser and go with each request.
 - "Test keys" checks both with one cheap real call.
 
 ## ⚙️ Configuration
@@ -207,8 +208,8 @@ Create `.env` in the repo root (it's gitignored). Everything is optional.
 
 | Variable | What it does |
 |---|---|
-| `OPENROUTER_API_KEY` | Server-side model key, used when a visitor brings none. Leave empty on a public host. |
-| `TYPESAFE_API_KEY` | Server-side Jev judge key. Without any Jev key, an OpenRouter model judges instead. |
+| `OPENROUTER_API_KEY` | Model key for the command-line tool only. The web app never uses it: everyone brings their own. |
+| `TYPESAFE_API_KEY` | Jev judge key for the command-line tool only. |
 | `SUPABASE_URL` | Your Supabase project URL. Turns on Supabase storage. |
 | `SUPABASE_SECRET_KEY` | Server-only secret key (`sb_secret_…`). Never put this in the browser. |
 | `SUPABASE_PUBLISHABLE_KEY` | Turns on accounts. Safe for browsers; the UI fetches it from the API. |
@@ -307,7 +308,7 @@ Tests fake every model call, so they're free and run in well under a second.
 
 - Personal data (emails, phone numbers, card and IBAN numbers, SSNs, postcodes, introduced names) is redacted before any
   conversation reaches a third-party model.
-- Model keys are never stored on the server. n8n and Retell keys never go to Supabase.
+- Keys live in tables only the server can read (row-level security on, no policies) and are never shown in full.
 - Uploaded code is read, never executed. Hone never edits or activates your workflows.
 - Compliance-style criteria are **flagged for review**, never presented as a legal verdict.
 

@@ -30,6 +30,15 @@ export function Transcript({ turns }: { turns: Turn[] }) {
               {t.at && <span className="num ml-2">{t.at}</span>}
             </span>
             <div className={cx("bubble", t.role === "agent" ? "bubble--agent" : "bubble--user")}>{t.text}</div>
+            {t.fields && Object.keys(t.fields).length > 0 && (
+              <span className="flex flex-wrap justify-end gap-1">
+                {Object.entries(t.fields).map(([k, v]) => (
+                  <span key={k} className="cr-badge num" title="Returned with this reply; judges see it too">
+                    {k}: {String(v)}
+                  </span>
+                ))}
+              </span>
+            )}
           </li>
         ),
       )}

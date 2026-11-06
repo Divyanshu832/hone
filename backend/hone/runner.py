@@ -24,7 +24,7 @@ from . import recommend, snapshots, store
 from .config import settings
 from .connectors import custom, n8n, retell
 from .connectors.base import ConnectorError
-from .llm import Spend, chat, jev, keys, parse_json
+from .llm import Spend, chat, clip_prompt, jev, keys, parse_json
 from .planner import AGENT_TURN_USD, AVG_TURNS, JUDGE_CALL_USD
 from .rubric import applies_when, run_check
 from .stats import bootstrap_ci, summarize
@@ -123,6 +123,7 @@ async def snapshot_for_run(run: dict, project: dict, secret: dict, spend: Spend)
     prev_run = next((r for r in store.list_("run", project["id"]) if r["id"] != run["id"] and r.get("snapshotId")), None)
     changed = bool(prev_run) and prev_run["snapshotId"] != snap["id"]
     run.update(snapshotId=snap["id"], agentVersion=snap["version"], agentChanged=changed, agentFresh=fresh,
+               firstRun=prev_run is None,
                changeSummary=snap["changeSummary"] if changed else None)
     # The first run on a new version checks which open recommendations that version carries out.
     if not snap["diff"].get("first") and not snap.get("recsChecked"):
@@ -133,9 +134,9 @@ async def snapshot_for_run(run: dict, project: dict, secret: dict, spend: Spend)
     return snap
 
 
-async def agent_reply(project: dict, secret: dict, transcript: list[dict], session: str) -> str:
+async def agent_reply(project: dict, secret: dict, transcript: list[dict], session: str) -> str | tuple[str, dict]:
     if project["host"] == "n8n":
-        return await n8n.send(project["trigger"], transcript[-1]["text"], session, transcript, secret.get("webhookFields"))
+        return await n8n.send_full(project["trigger"], transcript[-1]["text"], session, transcript, secret.get("webhookFields"))
     if project["host"] == "custom":
         hist = [{"role": t["role"], "content": t["text"]} for t in transcript if t["role"] != "tool"]
         reply, _ = await custom.send(secret["endpointUrl"], secret.get("format", "openai"), hist, session)
@@ -154,7 +155,8 @@ async def simulate(project: dict, secret: dict, scn: dict, spend: Spend) -> list
             await asyncio.sleep(1)
             reply = await agent_reply(project, secret, transcript, session)
         spend.add(AGENT_TURN_USD / 2)  # the agent's own model cost isn't visible to us; estimate it
-        transcript.append({"role": "agent", "text": reply})
+        reply, fields = reply if isinstance(reply, tuple) else (reply, {})
+        transcript.append({"role": "agent", "text": reply, **({"fields": fields} if fields else {})})
         if turn == MAX_TURNS - 1:
             break
         nxt = await next_user_turn(scn, transcript, spend)
@@ -166,7 +168,11 @@ async def simulate(project: dict, secret: dict, scn: dict, spend: Spend) -> list
 
 # ---------------- grading ----------------
 def _render(transcript: list[dict]) -> str:
-    return "\n".join(f"{'Customer' if t['role'] == 'user' else 'Agent'}: {t['text']}" for t in transcript if t["role"] != "tool")
+    """The conversation as the judge sees it: reply text, plus any fields returned with a reply."""
+    def line(t: dict) -> str:
+        meta = " ".join(f"[{k}: {v}]" for k, v in (t.get("fields") or {}).items())
+        return f"{'Customer' if t['role'] == 'user' else 'Agent'}: {t['text']}" + (f" {meta}" if meta else "")
+    return "\n".join(line(t) for t in transcript if t["role"] != "tool")
 
 
 def _condition(c: dict) -> str | None:
@@ -353,7 +359,14 @@ async def close_loop(run: dict, spend: Spend) -> None:
     """After a run: measure applied recommendations, then suggest new ones if the cap allows."""
     try:
         run["recsMeasured"] = [r["id"] for r in recommend.measure(run)]
-        if spend.usd + recommend.SUGGEST_USD <= run["budgetUsd"]:
+        same = same_as_before(run)
+        if same:
+            # Same agent and same rubric as a run that already has recommendations: asking again would
+            # cost tokens for the same advice. Point to the earlier ones instead.
+            run["recommendations"], run["recommendationsFrom"] = [], same["id"]
+            run["recommendationsSkipped"] = (f"The agent and rubric haven't changed since {same['id']}, so its "
+                                             "recommendations still apply. Apply one, then run again.")
+        elif spend.usd + recommend.SUGGEST_USD <= run["budgetUsd"]:
             run["recommendations"] = [r["id"] for r in await recommend.suggest(run, spend)]
         else:
             run["recommendations"], run["recommendationsSkipped"] = [], "Not enough budget left to write recommendations."
@@ -362,6 +375,29 @@ async def close_loop(run: dict, spend: Spend) -> None:
     run["recommending"] = False
     run["costUsd"] = round(spend.usd, 4)
     store.put("run", run["id"], run, run["projectId"])
+
+
+def _rubric_key(criteria: list[dict] | None) -> list:
+    return sorted((c.get("id"), c.get("text"), c.get("kind"), c.get("appliesWhen")) for c in criteria or [])
+
+
+def same_as_before(run: dict) -> dict | None:
+    """The latest earlier run on the same agent version and rubric that wrote recommendations, if any."""
+    if not run.get("snapshotId") or run.get("agentChanged"):
+        return None
+    runs = sorted(store.list_("run", run["projectId"]), key=lambda r: r.get("createdAt", ""), reverse=True)
+    for r in runs:
+        if r["id"] == run["id"] or r.get("status") not in ("done", "stopped"):
+            continue
+        if r.get("snapshotId") != run["snapshotId"]:
+            return None  # an older version: this run is the first on the current one
+        if r.get("recommendations") and _rubric_key(r.get("criteria")) == _rubric_key(run.get("criteria")):
+            return r
+        if r.get("recommendationsFrom"):
+            src = store.get("run", r["recommendationsFrom"])
+            if src and _rubric_key(src.get("criteria")) == _rubric_key(run.get("criteria")):
+                return src
+    return None
 
 
 def finalize(run: dict, criteria: list[dict], k: int, stopped: bool) -> None:
@@ -459,7 +495,7 @@ async def generate(prompt: str, kb: list[str], covered: list[str], n: int, spend
     while len(out) < n:
         batch = min(25, n - len(out))
         text = await chat([{"role": "user", "content": GEN.format(
-            n=batch, prompt=prompt[:16000], kb="\n".join(f"- {c[:200]}" for c in kb[:40]) or "(none)",
+            n=batch, prompt=clip_prompt(prompt), kb="\n".join(f"- {c[:200]}" for c in kb[:40]) or "(none)",
             covered="\n".join(f"- {c[:120]}" for c in covered[:60]) or "(none)")}],
             settings.rubric_model, spend, json_mode=True, temperature=0.9, max_tokens=8000)
         items = parse_json(text)

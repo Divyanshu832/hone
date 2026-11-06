@@ -141,8 +141,9 @@ function Results({ run, crit }: { run: Run; crit: Criterion[] }) {
   }).length;
   const failing = run.items.filter((i) => !i.trials.every(Boolean)).length;
   const recs = useQuery({
-    queryKey: ["recommendations", id, run.id],
-    queryFn: () => listRecommendations(id, run.id),
+    // Same agent and rubric as an earlier run: show that run's recommendations instead of new ones.
+    queryKey: ["recommendations", id, run.recommendationsFrom ?? run.id],
+    queryFn: () => listRecommendations(id, run.recommendationsFrom ?? run.id),
     enabled: !run.recommending,
   });
 
@@ -154,7 +155,11 @@ function Results({ run, crit }: { run: Run; crit: Criterion[] }) {
             Agent v{run.agentVersion}
           </Badge>
           <span>
-            {run.agentChanged ? `Changed since the last run: ${run.changeSummary}` : "Same agent as the last run."}
+            {run.firstRun
+              ? "First run: the baseline later versions are compared with."
+              : run.agentChanged
+                ? `Changed since the last run: ${run.changeSummary}`
+                : "Same agent as the last run."}
           </span>
           <Link href={`/p/${id}/history`} className="text-primary-ink underline">
             See history
@@ -164,7 +169,7 @@ function Results({ run, crit }: { run: Run; crit: Criterion[] }) {
       )}
       <div className="cr-card grid gap-6 rise">
         <div className="flex flex-wrap items-start justify-between gap-4">
-          <Stat label={`Passes all ${run.k} tries (pass^${run.k})`} value={<Pct value={run.passK} />}>
+          <Stat label={run.k === 1 ? "Passes (1 try each)" : `Passes all ${run.k} tries (pass^${run.k})`} value={<Pct value={run.passK} />}>
             <span className="num text-caption text-ink-2">
               95% range {pct(run.ci[0])} - {pct(run.ci[1])}
             </span>
@@ -199,7 +204,9 @@ function Results({ run, crit }: { run: Run; crit: Criterion[] }) {
         </div>
       </div>
 
-      <RecommendationsCard recs={recs.data} pending={run.recommending || recs.isPending} skipped={run.recommendationsSkipped} />
+      <RecommendationsCard recs={recs.data} pending={run.recommending || recs.isPending} skipped={run.recommendationsSkipped}
+        reusedFrom={run.recommendationsFrom ? { id: run.recommendationsFrom, href: `/p/${id}/runs/${run.recommendationsFrom}` } : undefined}
+      />
       <CriteriaTable run={run} crit={crit} />
 
       <div className="cr-card overflow-x-auto p-0">
@@ -270,7 +277,7 @@ export default function RunPage() {
     <>
       <PageHeader
         overline={
-          run.data ? `Run ${run.data.id} · ${run.data.split === "test" ? "Held-out test" : "Dev"} · ${run.data.k} trials each` : "Run"
+          run.data ? `Run ${run.data.id} · ${run.data.split === "test" ? "Held-out test" : "Dev"} · ${run.data.k} ${run.data.k === 1 ? "trial" : "trials"} each` : "Run"
         }
         title={
           run.data?.status === "running" ? (

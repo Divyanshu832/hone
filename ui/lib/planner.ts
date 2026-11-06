@@ -26,10 +26,10 @@ export function planRun(opts: {
       const estUsd = scenarios * k * perTrial;
       const note =
         scenarios === available
-          ? `Covers all ${available} scenarios, ${k} times each.`
+          ? `Covers all ${available} scenarios, ${times(k)}.`
           : scenarios === 0
             ? "This cap is too small for even one scenario. Raise it a little."
-            : `Covers ${scenarios} of ${available} scenarios, ${k} times each. The most important ones go first.`;
+            : `Covers ${scenarios} of ${available} scenarios, ${times(k)}. The most important ones go first.${k === 1 ? " With one try each, flaky answers won't show up; raise the cap to repeat them." : ""}`;
       return {
         budgetUsd,
         scenarios,
@@ -43,4 +43,8 @@ export function planRun(opts: {
     }
   }
   throw new Error("unreachable");
+}
+
+function times(k: number): string {
+  return k === 1 ? "once each" : `${k} times each`;
 }

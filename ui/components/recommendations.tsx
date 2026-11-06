@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowRight, Lightbulb } from "@phosphor-icons/react";
 import { setRecommendationStatus } from "@/lib/api";
@@ -80,12 +81,18 @@ export function RecommendationList({ recs, compact = false }: { recs: Recommenda
                 <>
                   <button
                     className="cr-btn cr-btn--secondary cr-btn--sm"
-                    aria-busy={m.isPending && m.variables?.id === r.id}
+                    aria-busy={m.isPending && m.variables?.id === r.id && m.variables.status === "applied"}
+                    disabled={m.isPending && m.variables?.id === r.id}
                     onClick={() => m.mutate({ id: r.id, status: "applied" })}
                   >
                     I applied this
                   </button>
-                  <button className="cr-btn cr-btn--ghost cr-btn--sm" onClick={() => m.mutate({ id: r.id, status: "dismissed" })}>
+                  <button
+                    className="cr-btn cr-btn--ghost cr-btn--sm"
+                    aria-busy={m.isPending && m.variables?.id === r.id && m.variables.status === "dismissed"}
+                    disabled={m.isPending && m.variables?.id === r.id}
+                    onClick={() => m.mutate({ id: r.id, status: "dismissed" })}
+                  >
                     Dismiss
                   </button>
                 </>
@@ -103,7 +110,17 @@ export function RecommendationList({ recs, compact = false }: { recs: Recommenda
   );
 }
 
-export function RecommendationsCard({ recs, pending, skipped }: { recs: Recommendation[] | undefined; pending?: boolean; skipped?: string }) {
+export function RecommendationsCard({
+  recs,
+  pending,
+  skipped,
+  reusedFrom,
+}: {
+  recs: Recommendation[] | undefined;
+  pending?: boolean;
+  skipped?: string;
+  reusedFrom?: { id: string; href: string };
+}) {
   return (
     <div className="cr-card p-0">
       <div className="grid gap-1 px-6 pt-5 pb-3">
@@ -115,12 +132,21 @@ export function RecommendationsCard({ recs, pending, skipped }: { recs: Recommen
           and measures whether it helped.
         </p>
       </div>
+      {reusedFrom && !pending && (
+        <p className="border-t border-line px-6 py-4 text-ui text-ink">
+          No changes to the agent or rubric since{" "}
+          <Link href={reusedFrom.href} className="text-primary-ink underline">
+            {reusedFrom.id}
+          </Link>
+          , so Hone didn&apos;t spend tokens on new advice. Its recommendations still apply:
+        </p>
+      )}
       {pending && (
         <p className="border-t border-line px-6 py-4 text-ui text-ink-2" role="status">
           Writing recommendations from this run…
         </p>
       )}
-      {!pending && recs && recs.length === 0 && (
+      {!pending && recs && recs.length === 0 && !reusedFrom && (
         <p className="border-t border-line px-6 py-4 text-ui text-ink-2">
           {skipped ?? "Nothing to recommend: every criterion that came up passed."}
         </p>

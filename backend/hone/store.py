@@ -7,8 +7,8 @@
 - **Memory** (public hosting with no database, or when Supabase can't be reached at startup): nothing is
   written to disk; everything is gone when the server restarts. The UI says so.
 
-Connection credentials (kind "secret": n8n / Retell API keys) never go to Supabase: they stay in the
-local file, or in memory in public mode.
+Connection details (kind "secret": n8n / Retell API keys, endpoints) are stored like everything else,
+in hone_secrets on Supabase. Only the server's secret key can read that table.
 
 Kinds: project, secret, agent, kb, dataset, criteria, run, item, label, gate, snapshot, recommendation.
 """
@@ -40,8 +40,9 @@ TABLES = {
     "dataset": "hone_datasets",
     "agent": "hone_agents",
     "gate": "hone_gates",
+    "secret": "hone_secrets",
 }
-LOCAL_ONLY = {"secret"}
+LOCAL_ONLY: set[str] = set()
 
 
 class StoreError(RuntimeError):

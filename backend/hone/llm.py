@@ -5,9 +5,11 @@
 - TypeSafe Jev: typed yes/no judgments (`noul` = probability of yes). One call can ask many
   questions about the same transcript, so all LLM-judged criteria for a trial cost one call.
 
-Keys (bring your own key): each request can carry the visitor's own keys in the `X-OpenRouter-Key` and
-`X-TypeSafe-Key` headers. They're held in a context variable for that request and the background work it
-starts (drafting, runs) and never written anywhere. Without them, the server's .env keys are used, if any.
+Keys (bring your own key): with accounts on, each organization's keys are saved in Supabase
+(hone_org_keys) and loaded for every request. Without accounts, the browser sends them in the
+`X-OpenRouter-Key` and `X-TypeSafe-Key` headers. Either way they're held in a context variable for that
+request and the background work it starts (drafting, runs). The web app never falls back to the server's
+.env keys; only the command-line tool (no request, so no context) uses them.
 """
 
 from __future__ import annotations
@@ -35,7 +37,7 @@ _keys: ContextVar[Keys | None] = ContextVar("hone_keys", default=None)
 
 
 def keys() -> Keys:
-    """The keys for the current request: the visitor's own, else the server's .env, else none."""
+    """The keys for the current request (the user's own). Outside a request (the CLI): the server's .env."""
     return _keys.get() or Keys(settings.openrouter_key, settings.typesafe_key)
 
 
@@ -108,3 +110,18 @@ async def jev(state: dict | str, questions: dict[str, dict], spend: Spend | None
     if spend is not None:
         spend.add(JEV_EST_USD_PER_CALL)
     return {qid: float(a.get("noul", 0.0)) for qid, a in (r.json().get("answers") or {}).items()}
+
+
+# GLM 5.3 reads up to 1M tokens (~4M characters). A million characters is far past any real agent
+# prompt, so in practice the whole prompt is read; the cut below is only a safety net.
+PROMPT_CHARS = 1_000_000
+
+
+def clip_prompt(text: str, limit: int = PROMPT_CHARS) -> str:
+    """An agent prompt for a model to read. Long prompts are cut at a line break with a clear note, so the
+    reader never mistakes Hone's cut for a sentence missing from the agent's prompt."""
+    if len(text) <= limit:
+        return text
+    cut = text.rfind("\n", 0, limit)
+    cut = cut if cut > limit * 0.8 else limit
+    return text[:cut] + f"\n\n[Hone stopped reading here: the prompt continues for another {len(text) - cut:,} characters.]"

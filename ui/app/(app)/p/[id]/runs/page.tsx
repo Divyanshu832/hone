@@ -5,13 +5,55 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { Play, X } from "@phosphor-icons/react";
-import { getProject, listCriteria, listRuns, startRun } from "@/lib/api";
+import { agentStatus, getProject, listCriteria, listRuns, startRun } from "@/lib/api";
 import { planRun } from "@/lib/planner";
 import { usd } from "@/lib/stats";
-import type { Project, Split } from "@/lib/types";
+import type { AgentStatus, Project, Split } from "@/lib/types";
 import { ErrorState, PageHeader, Pct, Skeleton, TrustBadge, timeAgo } from "@/components/ui";
 import { ErrorLine, KeyVal } from "@/components/wizard/parts";
 import { MoneyInput } from "@/components/money-input";
+
+/** Tells you, before spending anything, whether this run tests a new version of the agent. */
+function AgentChange({ s, loading, projectId }: { s: AgentStatus | null | undefined; loading: boolean; projectId: string }) {
+  if (loading)
+    return (
+      <p className="text-ui text-ink-2" role="status">
+        Checking whether the agent changed…
+      </p>
+    );
+  if (!s) return null;
+  if (s.changed && s.previousVersion)
+    return (
+      <div className="cr-alert cr-alert--success">
+        <span aria-hidden>↑</span>
+        <span>
+          <strong>Agent changed since v{s.previousVersion}.</strong> {s.summary}. This run tests v{s.version}, checks which
+          recommendations you applied and measures them.
+        </span>
+      </div>
+    );
+  if (s.changed || !s.lastRun) return null; // first version: nothing to compare with
+  return (
+    <div className="cr-alert cr-alert--warning">
+      <span aria-hidden>=</span>
+      <span>
+        <strong>No changes since the last run.</strong> The agent is still v{s.version}
+        {s.lastRun.passK != null && (
+          <>
+            {" "}(last run{" "}
+            <Link href={`/p/${projectId}/runs/${s.lastRun.id}`} className="underline">
+              {Math.round(s.lastRun.passK * 100)}% pass^k
+            </Link>
+            , {timeAgo(s.lastRun.at)})
+          </>
+        )}
+        . Running again only re-measures the same agent. Unless you changed the rubric, Hone won&apos;t pay for new recommendations
+        {s.openRecommendations ? ` (${s.openRecommendations} are still waiting to be applied)` : ""}.
+        {s.readError && <> Couldn&apos;t re-read the agent: {s.readError}</>}
+      </span>
+    </div>
+  );
+}
 
 function PlanDialog({ p, onClose }: { p: Project; onClose: () => void }) {
   const router = useRouter();
@@ -19,6 +61,7 @@ function PlanDialog({ p, onClose }: { p: Project; onClose: () => void }) {
   const [budget, setBudget] = useState(p.budgetUsd);
   const [split, setSplit] = useState<Split>("dev");
   const crit = useQuery({ queryKey: ["criteria", p.id], queryFn: () => listCriteria(p.id) });
+  const status = useQuery({ queryKey: ["agent-status", p.id], queryFn: () => agentStatus(p.id), staleTime: 0 });
   const total = p.counts.conversations + p.counts.generated || 100;
   const available = split === "dev" ? Math.round(total * 0.8) : Math.round(total * 0.2);
   const judged = crit.data?.filter((c) => c.kind === "judge").length ?? 5;
@@ -48,6 +91,7 @@ function PlanDialog({ p, onClose }: { p: Project; onClose: () => void }) {
         </button>
       </div>
       <div className="grid gap-5 px-6 py-5">
+        <AgentChange s={status.data} loading={status.isPending} projectId={p.id} />
         <div className="grid gap-2">
           <span className="cr-label">Which conversations</span>
           <div className="cr-seg w-fit" role="group" aria-label="Split">

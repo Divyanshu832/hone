@@ -102,7 +102,7 @@ export default function Overview() {
               <>
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <Stat
-                    label={`Passes all ${l.k} tries (pass^${l.k}) on the ${l.split === "test" ? "held-out test set" : "dev set"}`}
+                    label={`${l.k === 1 ? "Passes (1 try each)" : `Passes all ${l.k} tries (pass^${l.k})`} on the ${l.split === "test" ? "held-out test set" : "dev set"}`}
                     value={<Pct value={l.passK} />}
                     delta={l.deltaPassK}
                   />

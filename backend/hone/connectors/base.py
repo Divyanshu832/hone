@@ -66,3 +66,32 @@ def extract_reply(data: object) -> str:
             if isinstance(v, dict | list):
                 return extract_reply(v)
     return ""
+
+
+_REPLY_KEYS = ("output", "reply", "response", "text", "message", "answer", "content")
+
+
+def extract_fields(data: object) -> dict:
+    """Short fields returned next to the reply, e.g. {"message": "...", "status": "Alert"} -> {"status": "Alert"}.
+    Shown to the judge with that reply (a workflow's status flags are part of its behaviour)."""
+    if isinstance(data, list) and data:
+        return extract_fields(data[0])
+    if not isinstance(data, dict):
+        return {}
+    for key in _REPLY_KEYS:
+        if isinstance(data.get(key), dict):
+            inner = extract_fields(data[key])
+            if inner:
+                return inner
+    if not any(isinstance(data.get(k), str) for k in _REPLY_KEYS):
+        return {}
+    first_reply = next(k for k in _REPLY_KEYS if isinstance(data.get(k), str))
+    out = {}
+    for k, v in data.items():
+        if k == first_reply or k in ("sessionId", "session_id", "history", "summary"):
+            continue
+        if isinstance(v, bool | int | float) or (isinstance(v, str) and 0 < len(v) <= 80):
+            out[k] = v
+        if len(out) == 5:
+            break
+    return out

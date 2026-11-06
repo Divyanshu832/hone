@@ -20,10 +20,11 @@ import {
   Key,
 } from "@phosphor-icons/react";
 import { Suspense, useSyncExternalStore } from "react";
-import { getProject, health } from "@/lib/api";
+import { getProject, health, orgKeys } from "@/lib/api";
 import { getKeys, subscribeKeys } from "@/lib/keys";
 import { cx, HostMark } from "./ui";
 import { useSession } from "./auth-gate";
+import { ContactSalesLink, SALES_EMAIL } from "./contact-sales";
 import { MOCK } from "@/lib/api";
 
 const PROJECT_NAV = [
@@ -210,8 +211,13 @@ function Notices() {
   const k = useSyncExternalStore(subscribeKeys, getKeys, () => NO_KEYS);
   const h = useQuery({ queryKey: ["health"], queryFn: health, enabled: !MOCK, staleTime: 60_000 });
   const pathname = usePathname();
+  const session = useSession();
+  const inOrg = !!(session.data?.enabled && session.data.me?.org);
+  const ok = useQuery({ queryKey: ["org-keys"], queryFn: orgKeys, enabled: inOrg, staleTime: 60_000 });
   if (MOCK || !h.data) return null;
-  const needKeys = !k.openrouter && !k.typesafe && !h.data.serverKeys && pathname !== "/settings";
+  // Signed in, the organization's saved keys count; otherwise the ones in this browser.
+  const haveKeys = inOrg ? !!(ok.data?.openrouter || ok.data?.typesafe) : !!(k.openrouter || k.typesafe);
+  const needKeys = !haveKeys && pathname !== "/settings" && (!inOrg || ok.isSuccess);
   const temporary = !h.data.storage.persistent || !h.data.storage.ok;
   if (!needKeys && !temporary) return null;
   return (
@@ -220,10 +226,15 @@ function Notices() {
         <div className="cr-alert">
           <Key aria-hidden />
           <span>
-            <strong>Add your own keys to run tests.</strong> Hone uses your OpenRouter or TypeSafe key, kept in this browser.{" "}
+            <strong>Add your keys to run tests.</strong> Hone runs on your OpenRouter or TypeSafe key.{" "}
             <Link href="/settings" className="underline">
               Add keys
             </Link>
+            {SALES_EMAIL && (
+              <>
+                {" "}or <ContactSalesLink org={session.data?.enabled ? session.data.me?.org?.name : undefined} /> for the managed plan.
+              </>
+            )}
           </span>
         </div>
       )}

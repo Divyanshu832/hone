@@ -27,6 +27,8 @@ export interface Project {
   counts: { conversations: number; generated: number; criteria: number; kbDocs: number };
   /** True while the backend generates gap scenarios and drafts the rubric. */
   drafting?: boolean;
+  /** Drafting stopped part way (the server restarted). The rubric page offers "Draft again". */
+  draftInterrupted?: boolean;
   /** With accounts: "private" = only the owner sees it; "org" = everyone in their organization. */
   visibility?: Visibility;
   ownerId?: string;
@@ -36,6 +38,12 @@ export interface Project {
 }
 
 export type Visibility = "private" | "org";
+
+/** An organization's saved model keys, masked ("sk-or-…a1b2"); "" when not set. */
+export interface OrgKeys {
+  openrouter: string;
+  typesafe: string;
+}
 
 export interface AgentTool {
   name: string;
@@ -121,6 +129,10 @@ export interface Run {
   recommending?: boolean;
   recommendations?: string[];
   recommendationsSkipped?: string;
+  /** Same agent and rubric as this earlier run, so its recommendations are reused. */
+  recommendationsFrom?: string;
+  /** The project's first run: nothing earlier to compare with. */
+  firstRun?: boolean;
 }
 
 export interface Turn {
@@ -129,6 +141,8 @@ export interface Turn {
   at?: string;
   tool?: { name: string; args: string };
   kb?: { table: string; doc: string };
+  /** Short fields the agent returned next to this reply (e.g. status), which judges also see. */
+  fields?: Record<string, string | number | boolean>;
 }
 
 export interface CheckResult {
@@ -248,7 +262,6 @@ export interface Health {
   ok: boolean;
   openrouter: boolean;
   typesafe: boolean;
-  serverKeys: boolean;
   public: boolean;
   storage: { backend: "supabase" | "sqlite" | "memory"; persistent: boolean; ok: boolean; note: string | null };
   accounts?: boolean;
@@ -292,4 +305,15 @@ export interface InviteInfo {
   orgName: string;
   invitedBy: string;
   status: "open" | "used" | "expired";
+}
+
+/** Before a run: has the agent changed since the version Hone last saved? */
+export interface AgentStatus {
+  changed: boolean;
+  version: number;
+  previousVersion?: number | null;
+  summary: string | null;
+  readError: string | null;
+  lastRun: { id: string; version: number | null; passK: number | null; split: Split; at: string } | null;
+  openRecommendations: number;
 }

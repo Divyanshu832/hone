@@ -128,3 +128,33 @@ def test_webhook_body_carries_history(monkeypatch):
     assert reply == "Ciao!"
     assert body["message"] == "price?" and body["first_name"] == "Test"
     assert body["summary"] == "Customer: hi\nAgent: hello" and len(body["history"]) == 2
+
+
+def _ex(rows, ex_id="1"):
+    return {"id": ex_id, "startedAt": "2026-11-06T10:00:00Z",
+            "data": {"resultData": {"runData": {n: [{"data": {"main": [[{"json": j}]]}}] for n, j in rows}}}}
+
+
+def test_execution_import_webhook_and_structured_output():
+    from hone.connectors.n8n import _turn_from_execution
+
+    ex = _ex([("Webhook", {"body": {"message": "Ciao, quanto costa?", "phone": "+39 333"}}),
+              ("Agent", {"output": {"message": "Costa 39 euro.", "status": "Active"}})])
+    t = _turn_from_execution(ex)
+    assert t["user"] == "Ciao, quanto costa?" and t["agent"] == "Costa 39 euro." and t["session"] == "+39 333"
+    chat = _ex([("Chat", {"chatInput": "hi", "sessionId": "s1"}), ("Agent", {"output": "hello"})])
+    assert _turn_from_execution(chat)["agent"] == "hello"
+    own = _ex([("Webhook", {"body": {"message": "x", "sessionId": "hone-abc"}}), ("Agent", {"output": "y"})])
+    assert _turn_from_execution(own) is None, "Hone's own test traffic isn't a real conversation"
+
+
+def test_reply_fields_kept_for_the_judge():
+    from hone.connectors.base import extract_fields, extract_reply
+    from hone.runner import _render
+
+    data = {"status": "Alert", "message": "Ti passo al team."}
+    assert extract_reply(data) == "Ti passo al team." and extract_fields(data) == {"status": "Alert"}
+    assert extract_fields({"output": {"message": "hi", "status": "Active"}}) == {"status": "Active"}
+    assert extract_fields({"output": "plain"}) == {}
+    t = [{"role": "user", "text": "ho la rosacea"}, {"role": "agent", "text": "Ti passo al team.", "fields": {"status": "Alert"}}]
+    assert _render(t).endswith("Agent: Ti passo al team. [status: Alert]")

@@ -213,3 +213,26 @@ alter table hone_projects add column if not exists visibility text
   generated always as (coalesce(doc->>'visibility', 'private')) stored check (visibility in ('private', 'org'));
 create index if not exists hone_projects_owner on hone_projects(owner_id);
 create index if not exists hone_projects_org on hone_projects(org_id);
+
+-- ---------------- Keys ----------------
+-- Connection details per project (n8n / Retell API keys, endpoints) and model keys per organization
+-- (OpenRouter, TypeSafe). RLS on with no policies: only the server's secret key reads or writes them.
+create table if not exists hone_secrets (
+  id text primary key, project_id text not null references hone_projects(id) on delete cascade,
+  doc jsonb not null, created_at timestamptz not null default now(), updated_at timestamptz not null default now()
+);
+create table if not exists hone_org_keys (
+  org_id uuid primary key references hone_orgs(id) on delete cascade,
+  openrouter text, typesafe text,
+  updated_by uuid references auth.users(id) on delete set null,
+  created_at timestamptz not null default now(), updated_at timestamptz not null default now()
+);
+do $$
+declare t text;
+begin
+  foreach t in array array['hone_secrets', 'hone_org_keys'] loop
+    execute format('drop trigger if exists %I_touch on %I', t, t);
+    execute format('create trigger %I_touch before update on %I for each row execute function hone_touch()', t, t);
+    execute format('alter table %I enable row level security', t);
+  end loop;
+end $$;

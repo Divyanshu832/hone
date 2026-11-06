@@ -122,6 +122,8 @@ export function sufficiency(convs: Conversation[], targetScenarios = 100): Suffi
       ? `You have ${usable} usable conversations. That's enough, so I won't generate any.`
       : decision === "fill_gaps"
         ? `You have ${usable} usable conversations. I'll generate ${generate} more to cover the gaps, using yours as the reference.`
-        : `You have ${usable} usable conversations. I'll generate ${generate}, styled on yours and grounded in your knowledge base.`;
+        : usable === 0
+          ? `No usable conversations yet, so I'll generate ${generate} from the agent's prompt and knowledge base.`
+          : `You have ${usable} usable conversations. I'll generate ${generate}, styled on yours and grounded in your knowledge base.`;
   return { conversations: convs.length, usable, decision, generate, dev: total - test, test, sentence };
 }

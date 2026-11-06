@@ -5,7 +5,7 @@ import { useParams, useSearchParams } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Suspense, useEffect, useState } from "react";
 import { ArrowRight, CaretDown, Code, Scales } from "@phosphor-icons/react";
-import { getProject, listCriteria, saveCriteria } from "@/lib/api";
+import { getProject, listCriteria, redraft, saveCriteria } from "@/lib/api";
 import type { Criterion } from "@/lib/types";
 import { Badge, ErrorState, PageHeader, Skeleton, cx } from "@/components/ui";
 import { WorkingList } from "@/components/wizard/parts";
@@ -175,6 +175,8 @@ function RubricInner() {
   const drafts = list?.filter((c) => c.status === "draft").length ?? 0;
   const update = (c: Criterion) => setItems((list ?? []).map((x) => (x.id === c.id ? c : x)));
 
+  if (project.data?.draftInterrupted && !q.data?.length) return <DraftInterrupted projectId={id} />;
+
   if (drafting >= 0 || (backendDrafting && !(q.data?.length))) {
     return (
       <div className="mx-auto max-w-[560px] py-16">
@@ -259,5 +261,28 @@ export default function RubricPage() {
     <Suspense>
       <RubricInner />
     </Suspense>
+  );
+}
+
+function DraftInterrupted({ projectId }: { projectId: string }) {
+  const qc = useQueryClient();
+  const m = useMutation({
+    mutationFn: () => redraft(projectId),
+    onSuccess: (p) => qc.setQueryData(["project", projectId], p),
+  });
+  return (
+    <div className="mx-auto grid max-w-[560px] gap-4 py-16">
+      <h1 className="cr-h2">
+        Drafting was <em>interrupted</em>
+      </h1>
+      <p className="text-body text-ink-2">
+        Hone stopped before it finished writing your scenarios and criteria (the server restarted). Nothing was lost; start
+        it again.
+      </p>
+      <button className="cr-btn cr-btn--primary w-fit" aria-busy={m.isPending} onClick={() => m.mutate()}>
+        Draft again
+      </button>
+      {m.isError && <span className="cr-error" role="alert">{m.error.message}</span>}
+    </div>
   );
 }

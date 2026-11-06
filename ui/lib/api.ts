@@ -7,6 +7,7 @@ import { accessToken, authConfig } from "./auth";
 import type {
   AgentInfo,
   AgentSnapshot,
+  AgentStatus,
   Health,
   Invite,
   InviteInfo,
@@ -27,6 +28,7 @@ import type {
   Run,
   RunEvent,
   RunItem,
+  OrgKeys,
 } from "./types";
 import { summarize } from "./stats";
 
@@ -478,5 +480,17 @@ export const removeMember = (id: string) => http<{ ok: true }>(`/org/members/${i
 export const inviteInfo = (token: string) => http<InviteInfo>(`/invites/${encodeURIComponent(token)}`);
 export const acceptInvite = (token: string) => http<Me>(`/invites/${encodeURIComponent(token)}/accept`, { method: "POST" });
 export const inviteLink = (token: string) => `${window.location.origin}/invite/${token}`;
+/** The organization's model keys, masked. Saving sends only the fields given; "" removes a key. */
+export const orgKeys = () => http<OrgKeys>("/org/keys");
+export const saveOrgKeys = (k: Partial<OrgKeys>) => http<OrgKeys>("/org/keys", { method: "PUT", body: JSON.stringify(k) });
 export const setVisibility = (projectId: string, visibility: Visibility) =>
   http<Project>(`/projects/${projectId}/visibility`, { method: "PATCH", body: JSON.stringify({ visibility }) });
+
+/** Re-reads the agent and compares it with the last saved version. Saves nothing. */
+export async function agentStatus(projectId: string): Promise<AgentStatus | null> {
+  if (MOCK) return null;
+  return http(`/projects/${projectId}/agent-status`);
+}
+
+/** Start drafting scenarios and the rubric again after it was interrupted. */
+export const redraft = (projectId: string) => http<Project>(`/projects/${projectId}/draft`, { method: "POST" });

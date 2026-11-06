@@ -20,7 +20,7 @@ from datetime import UTC, datetime
 from . import store
 from .config import settings
 from .connectors.base import ConnectorError
-from .llm import Spend, chat, jev, keys, parse_json
+from .llm import Spend, chat, clip_prompt, jev, keys, parse_json
 
 SUGGEST_USD = 0.03  # reserved from the run's cap before suggesting
 MOVE = 0.05  # a pass-rate change smaller than this counts as "no change"
@@ -92,7 +92,7 @@ async def suggest(run: dict, spend: Spend) -> list[dict]:
     kb = store.get("kb", project_id) or []
     pending = [r for r in store.list_("recommendation", project_id) if r["status"] == "open"]
     text = await chat([{"role": "user", "content": PROMPT.format(
-        prompt=(agent.get("prompt") or "(not available)")[:16000],
+        prompt=clip_prompt(agent.get("prompt") or "(not available)"),
         kb="\n".join(f"- {c[:300]}" for c in kb[:30]) or "(none)",
         failing="\n".join(f"{f['id']} ({f['passRate']:.0%}): {f['text']}" for f in failing),
         triage=json.dumps(run.get("triage", {})),

@@ -478,7 +478,7 @@ export function StepData(p: StepProps) {
         {mode === "import" && !s.data.imported && (
           <div className="cr-card grid gap-3">
             <p className="text-body-sm text-ink">
-              Hone will read the last 30 days of {s.host === "retell" ? "calls (transcripts only)" : "executions of your production workflow"} from{" "}
+              Hone will read the last 30 days of {s.host === "retell" ? "calls (transcripts only)" : "executions of the sandbox workflow (your production workflow is never read)"} from{" "}
               {HOST_LABEL[s.host!]}. Names, phone numbers and IDs are redacted before anything reaches a model.
             </p>
             <button className="cr-btn cr-btn--secondary w-fit" aria-busy={imp.isPending} onClick={() => imp.mutate()}>
@@ -487,13 +487,27 @@ export function StepData(p: StepProps) {
           </div>
         )}
         {mode === "import" && imp.isError && <ErrorLine error={imp.error} retry={() => imp.mutate()} />}
-        {mode === "import" && s.data.imported && (
+        {mode === "import" && s.data.imported && s.data.imported.conversations === 0 && (
+          <div className="cr-alert cr-alert--warning">
+            <span aria-hidden>!</span>
+            <span>
+              <strong>No past conversations in the sandbox yet.</strong> Hone only reads the sandbox, and skips its own test
+              messages. It will generate scenarios instead, or you can upload a CSV of real chats.
+            </span>
+          </div>
+        )}
+        {mode === "import" && s.data.imported && s.data.imported.conversations > 0 && (
           <div className="cr-alert cr-alert--success">
             <CheckCircle weight="fill" />
             <span>
               Pulled <span className="num">{s.data.imported.conversations.toLocaleString("en-US")}</span> conversations (
-              <span className="num">{s.data.imported.messages.toLocaleString("en-US")}</span> messages) from{" "}
-              <span className="num">{s.data.imported.from}</span> to <span className="num">{s.data.imported.to}</span>.
+              <span className="num">{s.data.imported.messages.toLocaleString("en-US")}</span> messages)
+              {s.data.imported.from && (
+                <>
+                  {" "}from <span className="num">{s.data.imported.from}</span> to <span className="num">{s.data.imported.to}</span>
+                </>
+              )}
+              .
             </span>
           </div>
         )}

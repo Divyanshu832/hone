@@ -79,8 +79,8 @@ def _project_of(path: str) -> str | None:
 
 @app.middleware("http")
 async def bring_your_own_key(request: Request, call_next):
-    """Visitor keys come in headers, live for this request (and the background work it starts) and are
-    never stored. Missing keys fall back to the server's .env, if it has any.
+    """Model keys for this request (and the background work it starts): the organization's saved keys when
+    signed in, else the keys the browser sends in headers. No fallback to the server's keys.
 
     With accounts on, every call (except health, sign-in config and reading an invite) needs a signed-in
     person, and their organization is the workspace. Without accounts, the browser's workspace header is."""
@@ -105,11 +105,21 @@ async def bring_your_own_key(request: Request, call_next):
         if not ws and path not in (f"{API}/me", f"{API}/orgs") and not path.startswith(f"{API}/invites/"):
             _me.reset(t3)
             return _deny(403, "Create or join an organization first.")
-    k = Keys(request.headers.get("x-openrouter-key") or settings.openrouter_key,
-             request.headers.get("x-typesafe-key") or settings.typesafe_key)
+    # Bring your own key, always: signed in, the organization's saved keys; otherwise the keys the browser
+    # sends. The server's own .env keys are never used for web requests (only by the command-line tool).
+    if _me.get() and ws:
+        try:
+            ok = await auth.org_keys_raw(ws)
+        except (store.StoreError, httpx.HTTPError) as e:
+            log.warning("loading organization keys failed: %s", e)
+            ok = {}
+        k = Keys(ok.get("openrouter"), ok.get("typesafe"))
+    else:
+        k = Keys(request.headers.get("x-openrouter-key") or None, request.headers.get("x-typesafe-key") or None)
     t1, t2 = use_keys(k), _workspace.set(ws)
     try:
-        if not _owns(_project_of(path)):
+        # Browsers send a CORS preflight (OPTIONS, no credentials) before every call: let CORS answer it.
+        if request.method != "OPTIONS" and not _owns(_project_of(path)):
             return _deny(404, "Not found")
         return await call_next(request)
     finally:
@@ -158,7 +168,7 @@ class ConnectIn(BaseModel):
 async def health():
     k = keys()
     return {"ok": True, "openrouter": bool(k.openrouter), "typesafe": bool(k.typesafe),
-            "serverKeys": bool(settings.openrouter_key or settings.typesafe_key), "public": settings.public,
+            "public": settings.public,
             "storage": store.health(), "accounts": auth.ENABLED}
 
 
@@ -224,6 +234,21 @@ async def revoke_invite(iid: str):
 async def remove_member(uid: str):
     await auth.remove_member(_profile(), uid)
     return {"ok": True}
+
+
+class OrgKeysIn(BaseModel):
+    openrouter: str | None = None
+    typesafe: str | None = None
+
+
+@app.get(f"{API}/org/keys")
+async def get_org_keys():
+    return await auth.org_keys(_profile())
+
+
+@app.put(f"{API}/org/keys")
+async def put_org_keys(body: OrgKeysIn):
+    return await auth.save_org_keys(_profile(), body.model_dump(exclude_unset=True))
 
 
 @app.get(f"{API}/invites/{{token}}")
@@ -434,6 +459,8 @@ async def create_project(p: ProjectIn, bg: BackgroundTasks):
     store.put("agent", pid, agent, pid)
     snapshots.record(pid, agent)
     store.put("gate", pid, {"minPassK": 0.8, "maxRegression": 0.03, "requireTrusted": True, "history": []}, pid)
+    project.update(draftStartedAt=now(), draftBoot=BOOT)
+    store.put("project", pid, project, pid)
     bg.add_task(_prepare, pid, suff.generate if p.host != "retell" else 0, keys())
     return _public(project)
 
@@ -475,12 +502,50 @@ def _ownership() -> dict:
     return {"workspace": _workspace.get()}
 
 
+DRAFT_STALE_S = 600
+BOOT = uuid.uuid4().hex[:12]  # this server process; a draft started by another one was killed by a restart
+
+
+def _draft_interrupted(p: dict) -> bool:
+    """Drafting runs in the background in this process, so a restart kills it. Interrupted when it was
+    started by an earlier process, or (as a safety net) when it's been going for ten minutes."""
+    if not p.get("drafting"):
+        return False
+    if p.get("draftBoot") != BOOT:
+        return True
+    try:
+        started = datetime.fromisoformat(p.get("draftStartedAt") or p["createdAt"])
+    except (KeyError, ValueError):
+        return True
+    return (datetime.now(UTC) - started).total_seconds() > DRAFT_STALE_S
+
+
 def _public(p: dict) -> dict:
     me = _me.get()
-    out = {k: v for k, v in p.items() if k not in ("trigger", "workspace", "orgId")}
+    out = {k: v for k, v in p.items() if k not in ("trigger", "workspace", "orgId", "draftBoot")}
+    if _draft_interrupted(p):
+        out["drafting"], out["draftInterrupted"] = False, True
     if me:
         out["mine"] = p.get("ownerId") == me["id"]
     return out
+
+
+@app.post(f"{API}/projects/{{pid}}/draft")
+async def redraft(pid: str, bg: BackgroundTasks):
+    """Start drafting again after it was interrupted: generate scenarios if none were made, then the rubric."""
+    p = store.get("project", pid)
+    if not p:
+        raise HTTPException(404, "Project not found")
+    if p.get("drafting") and not _draft_interrupted(p):
+        raise HTTPException(409, "Hone is already drafting this project.")
+    if not keys().openrouter:
+        raise HTTPException(400, "Add your OpenRouter key in Settings first.")
+    scenarios = store.get("dataset", pid) or []
+    generate = 0 if p["host"] == "retell" or any(s.get("source") == "generated" for s in scenarios) else max(0, 100 - len(scenarios))
+    p.update(drafting=True, draftStartedAt=now(), draftBoot=BOOT)
+    store.put("project", pid, p, pid)
+    bg.add_task(_prepare, pid, generate, keys())
+    return _public(p)
 
 
 @app.get(f"{API}/projects")
@@ -615,6 +680,27 @@ async def run_events(rid: str):
 
 
 # ---------------- history: agent versions and recommendations ----------------
+@app.get(f"{API}/projects/{{pid}}/agent-status")
+async def agent_status(pid: str):
+    """Before a run: has the agent changed since the version Hone last tested? Reads the agent, saves nothing."""
+    if not store.get("project", pid):
+        raise HTTPException(404, "Project not found")
+    secret = store.get("secret", pid) or {}
+    read_error = None
+    try:
+        agent = await runner.read_agent(secret)
+    except ConnectorError as e:
+        agent, read_error = store.get("agent", pid) or {}, str(e)[:200]
+    out = snapshots.compare(pid, agent)
+    runs = sorted(store.list_("run", pid), key=lambda r: r.get("createdAt", ""), reverse=True)
+    last = next((r for r in runs if r.get("status") in ("done", "stopped")), None)
+    out["readError"] = read_error
+    out["lastRun"] = ({"id": last["id"], "version": last.get("agentVersion"), "passK": last.get("passK"),
+                       "split": last.get("split"), "at": last.get("createdAt")} if last else None)
+    out["openRecommendations"] = sum(1 for r in store.list_("recommendation", pid) if r["status"] == "open")
+    return out
+
+
 @app.get(f"{API}/projects/{{pid}}/snapshots")
 async def list_snapshots(pid: str):
     """Every agent version Hone has tested, newest first, each with what changed."""

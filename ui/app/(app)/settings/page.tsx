@@ -2,11 +2,13 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, useSyncExternalStore } from "react";
-import { checkKeys, health, MOCK } from "@/lib/api";
+import { checkKeys, health, MOCK, orgKeys, saveOrgKeys } from "@/lib/api";
 import { clearKeys, getKeys, isRemembered, mask, saveKeys, subscribeKeys } from "@/lib/keys";
+import type { OrgKeys } from "@/lib/types";
 import { Badge, PageHeader } from "@/components/ui";
 import { useSession } from "@/components/auth-gate";
 import { AccountCard, TeamCard } from "@/components/team";
+import { ManagedPlanCard } from "@/components/contact-sales";
 
 const EMPTY = { openrouter: "", typesafe: "" };
 
@@ -32,27 +34,9 @@ const STORAGE: Record<string, string> = {
 };
 
 export default function SettingsPage() {
-  const qc = useQueryClient();
-  const saved = useSyncExternalStore(subscribeKeys, getKeys, () => EMPTY);
-  const [draft, setDraft] = useState<typeof EMPTY | null>(null);
-  // Read from storage the same way as the keys, so the server render and the browser agree.
-  const remembered = useSyncExternalStore(subscribeKeys, isRemembered, () => false);
-  const [rememberChoice, setRemember] = useState<boolean | null>(null);
-  const remember = rememberChoice ?? remembered;
   const h = useQuery({ queryKey: ["health"], queryFn: health, enabled: !MOCK });
-  const check = useMutation({ mutationFn: checkKeys });
   const session = useSession();
   const me = session.data?.enabled ? session.data.me : null;
-  const editing = draft !== null || (!saved.openrouter && !saved.typesafe);
-  const form = draft ?? saved;
-
-  function save(e: React.FormEvent) {
-    e.preventDefault();
-    saveKeys(form, remember);
-    setDraft(null);
-    qc.invalidateQueries();
-    check.mutate();
-  }
 
   return (
     <>
@@ -60,7 +44,7 @@ export default function SettingsPage() {
       <PageHeader
         overline="Settings"
         title={me ? "Account and keys" : "Your keys"}
-        lede="Hone runs on your own model keys. They stay in this browser and go only to Hone's server with each request. It never saves them."
+        lede={me ? "Your account, your team, and the model keys Hone runs on." : "Hone runs on your own model keys."}
       />
       <div className="grid max-w-[760px] gap-6">
         {me?.org && (
@@ -69,79 +53,8 @@ export default function SettingsPage() {
             <TeamCard me={me} />
           </>
         )}
-        <form className="cr-card grid gap-5" onSubmit={save}>
-          <h2 className="text-body weight-bold">Model keys</h2>
-          {FIELDS.map((f) => (
-            <label key={f.id} className="cr-field">
-              <span className="cr-label flex items-center gap-2">
-                {f.label}
-                {check.data?.[f.id] && (
-                  <Badge tone={check.data[f.id]!.ok ? "success" : "danger"} dot>
-                    {check.data[f.id]!.ok ? "Works" : "Didn't work"}
-                  </Badge>
-                )}
-              </span>
-              {editing ? (
-                <input
-                  className="cr-input num"
-                  type="password"
-                  autoComplete="new-password"
-                  data-1p-ignore
-                  data-lpignore="true"
-                  spellCheck={false}
-                  placeholder={f.placeholder}
-                  value={form[f.id]}
-                  onChange={(e) => setDraft({ ...form, [f.id]: e.target.value })}
-                />
-              ) : (
-                <span className="num text-body-sm text-ink">{saved[f.id] ? mask(saved[f.id]) : <span className="text-ink-2">Not set</span>}</span>
-              )}
-              <span className="cr-help">
-                {check.data?.[f.id] && !check.data[f.id]!.ok ? check.data[f.id]!.detail : f.hint}
-              </span>
-            </label>
-          ))}
-          {editing ? (
-            <>
-              <label className="cr-check flex-wrap text-ui text-ink">
-                <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} />
-                Remember on this device
-                <span className="text-ink-2">(otherwise they&apos;re forgotten when you close the tab)</span>
-              </label>
-              <div className="flex flex-wrap gap-2">
-                <button className="cr-btn cr-btn--primary" disabled={!form.openrouter.trim() && !form.typesafe.trim()}>
-                  Save and test keys
-                </button>
-                {draft !== null && (saved.openrouter || saved.typesafe) && (
-                  <button type="button" className="cr-btn cr-btn--ghost" onClick={() => setDraft(null)}>
-                    Cancel
-                  </button>
-                )}
-              </div>
-            </>
-          ) : (
-            <div className="flex flex-wrap gap-2">
-              <button type="button" className="cr-btn cr-btn--secondary" onClick={() => setDraft({ ...saved })}>
-                Change keys
-              </button>
-              <button type="button" className="cr-btn cr-btn--ghost" aria-busy={check.isPending} onClick={() => check.mutate()}>
-                Test keys
-              </button>
-              <button
-                type="button"
-                className="cr-btn cr-btn--ghost ml-auto"
-                onClick={() => {
-                  clearKeys();
-                  check.reset();
-                  qc.invalidateQueries();
-                }}
-              >
-                Remove from this browser
-              </button>
-            </div>
-          )}
-          {check.isError && <span className="cr-error" role="alert">{check.error.message}</span>}
-        </form>
+        {me?.org ? <OrgKeysCard /> : <BrowserKeysCard />}
+        <ManagedPlanCard org={me?.org?.name} />
 
         {h.data && (
           <div className="cr-card grid gap-3">
@@ -157,9 +70,6 @@ export default function SettingsPage() {
               </span>
             </div>
             {h.data.storage.note && <p className="text-caption text-ink-2">{h.data.storage.note}</p>}
-            {!saved.openrouter && !saved.typesafe && h.data.serverKeys && (
-              <p className="text-caption text-ink-2">This server also has its own keys, used when you don&apos;t add yours.</p>
-            )}
           </div>
         )}
 
@@ -174,5 +84,200 @@ export default function SettingsPage() {
         )}
       </div>
     </>
+  );
+}
+
+/** Signed in: the organization's keys, saved on Hone's server. Everyone in the organization uses them. */
+function OrgKeysCard() {
+  const qc = useQueryClient();
+  const saved = useQuery({ queryKey: ["org-keys"], queryFn: orgKeys });
+  const [draft, setDraft] = useState<OrgKeys | null>(null);
+  const check = useMutation({ mutationFn: checkKeys });
+  const save = useMutation({
+    mutationFn: saveOrgKeys,
+    onSuccess: (k) => {
+      qc.setQueryData(["org-keys"], k);
+      setDraft(null);
+      if (k.openrouter || k.typesafe) check.mutate();
+      else check.reset();
+    },
+  });
+  const s = saved.data ?? EMPTY;
+  const editing = draft !== null || (saved.isSuccess && !s.openrouter && !s.typesafe);
+  const form = draft ?? EMPTY;
+
+  function submit(e: React.FormEvent) {
+    e.preventDefault();
+    // Only send what was typed: an empty field keeps the saved key.
+    const changes: Partial<OrgKeys> = {};
+    for (const f of FIELDS) if (form[f.id].trim()) changes[f.id] = form[f.id].trim();
+    save.mutate(changes);
+  }
+
+  if (saved.isPending) return <div className="cr-card text-ui text-ink-2">Loading keys…</div>;
+  if (saved.isError) return <div className="cr-card cr-error" role="alert">{saved.error.message}</div>;
+
+  return (
+    <form className="cr-card grid gap-5" onSubmit={submit}>
+      <div className="grid gap-1">
+        <h2 className="text-body weight-bold">Model keys</h2>
+        <p className="text-caption text-ink-2">Saved for your organization. Everyone in it runs tests with these keys.</p>
+      </div>
+      {FIELDS.map((f) => (
+        <label key={f.id} className="cr-field">
+          <span className="cr-label flex items-center gap-2">
+            {f.label}
+            <CheckBadge r={check.data?.[f.id]} />
+          </span>
+          {editing ? (
+            <input
+              className="cr-input num"
+              type="password"
+              autoComplete="new-password"
+              data-1p-ignore
+              data-lpignore="true"
+              spellCheck={false}
+              placeholder={s[f.id] ? `Saved: ${s[f.id]}. Leave empty to keep it.` : f.placeholder}
+              value={form[f.id]}
+              onChange={(e) => setDraft({ ...form, [f.id]: e.target.value })}
+            />
+          ) : (
+            <span className="num text-body-sm text-ink">{s[f.id] || <span className="text-ink-2">Not set</span>}</span>
+          )}
+          <span className="cr-help">{check.data?.[f.id] && !check.data[f.id]!.ok ? check.data[f.id]!.detail : f.hint}</span>
+        </label>
+      ))}
+      {editing ? (
+        <div className="flex flex-wrap gap-2">
+          <button className="cr-btn cr-btn--primary" aria-busy={save.isPending} disabled={!form.openrouter.trim() && !form.typesafe.trim()}>
+            Save and test keys
+          </button>
+          {(s.openrouter || s.typesafe) && (
+            <button type="button" className="cr-btn cr-btn--ghost" onClick={() => setDraft(null)}>
+              Cancel
+            </button>
+          )}
+        </div>
+      ) : (
+        <div className="flex flex-wrap gap-2">
+          <button type="button" className="cr-btn cr-btn--secondary" onClick={() => setDraft({ ...EMPTY })}>
+            Change keys
+          </button>
+          <button type="button" className="cr-btn cr-btn--ghost" aria-busy={check.isPending} onClick={() => check.mutate()}>
+            Test keys
+          </button>
+          <button
+            type="button"
+            className="cr-btn cr-btn--ghost ml-auto"
+            aria-busy={save.isPending}
+            onClick={() => save.mutate({ openrouter: "", typesafe: "" })}
+          >
+            Remove keys
+          </button>
+        </div>
+      )}
+      {save.isError && <span className="cr-error" role="alert">{save.error.message}</span>}
+      {check.isError && <span className="cr-error" role="alert">{check.error.message}</span>}
+    </form>
+  );
+}
+
+/** Without accounts: keys live in this browser and go with each request. */
+function BrowserKeysCard() {
+  const qc = useQueryClient();
+  const saved = useSyncExternalStore(subscribeKeys, getKeys, () => EMPTY);
+  const [draft, setDraft] = useState<typeof EMPTY | null>(null);
+  // Read from storage the same way as the keys, so the server render and the browser agree.
+  const remembered = useSyncExternalStore(subscribeKeys, isRemembered, () => false);
+  const [rememberChoice, setRemember] = useState<boolean | null>(null);
+  const remember = rememberChoice ?? remembered;
+  const check = useMutation({ mutationFn: checkKeys });
+  const editing = draft !== null || (!saved.openrouter && !saved.typesafe);
+  const form = draft ?? saved;
+
+  function save(e: React.FormEvent) {
+    e.preventDefault();
+    saveKeys(form, remember);
+    setDraft(null);
+    qc.invalidateQueries();
+    check.mutate();
+  }
+
+  return (
+    <form className="cr-card grid gap-5" onSubmit={save}>
+      <h2 className="text-body weight-bold">Model keys</h2>
+      {FIELDS.map((f) => (
+        <label key={f.id} className="cr-field">
+          <span className="cr-label flex items-center gap-2">
+            {f.label}
+            <CheckBadge r={check.data?.[f.id]} />
+          </span>
+          {editing ? (
+            <input
+              className="cr-input num"
+              type="password"
+              autoComplete="new-password"
+              data-1p-ignore
+              data-lpignore="true"
+              spellCheck={false}
+              placeholder={f.placeholder}
+              value={form[f.id]}
+              onChange={(e) => setDraft({ ...form, [f.id]: e.target.value })}
+            />
+          ) : (
+            <span className="num text-body-sm text-ink">{saved[f.id] ? mask(saved[f.id]) : <span className="text-ink-2">Not set</span>}</span>
+          )}
+          <span className="cr-help">{check.data?.[f.id] && !check.data[f.id]!.ok ? check.data[f.id]!.detail : f.hint}</span>
+        </label>
+      ))}
+      {editing ? (
+        <>
+          <label className="cr-check flex-wrap text-ui text-ink">
+            <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} />
+            Remember on this device
+          </label>
+          <div className="flex flex-wrap gap-2">
+            <button className="cr-btn cr-btn--primary" disabled={!form.openrouter.trim() && !form.typesafe.trim()}>
+              Save and test keys
+            </button>
+            {draft !== null && (saved.openrouter || saved.typesafe) && (
+              <button type="button" className="cr-btn cr-btn--ghost" onClick={() => setDraft(null)}>
+                Cancel
+              </button>
+            )}
+          </div>
+        </>
+      ) : (
+        <div className="flex flex-wrap gap-2">
+          <button type="button" className="cr-btn cr-btn--secondary" onClick={() => setDraft({ ...saved })}>
+            Change keys
+          </button>
+          <button type="button" className="cr-btn cr-btn--ghost" aria-busy={check.isPending} onClick={() => check.mutate()}>
+            Test keys
+          </button>
+          <button
+            type="button"
+            className="cr-btn cr-btn--ghost ml-auto"
+            onClick={() => {
+              clearKeys();
+              check.reset();
+              qc.invalidateQueries();
+            }}
+          >
+            Remove keys
+          </button>
+        </div>
+      )}
+      {check.isError && <span className="cr-error" role="alert">{check.error.message}</span>}
+    </form>
+  );
+}
+
+function CheckBadge({ r }: { r?: { ok: boolean } }) {
+  if (!r) return null;
+  return (
+    <Badge tone={r.ok ? "success" : "danger"} dot>
+      {r.ok ? "Works" : "Didn't work"}
+    </Badge>
   );
 }

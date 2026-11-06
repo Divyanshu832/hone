@@ -11,11 +11,17 @@ import re
 import uuid
 from urllib.parse import urlparse
 
-from .base import ConnectorError, agent_info, client, explain, extract_reply
+from .base import ConnectorError, agent_info, client, explain, extract_fields, extract_reply
 
 AGENT_TYPE = "@n8n/n8n-nodes-langchain.agent"
 CHAT_TRIGGER = "@n8n/n8n-nodes-langchain.chatTrigger"
 WEBHOOK = "n8n-nodes-base.webhook"
+
+
+def _key(api_key: str | None) -> str:
+    if not api_key:
+        raise ConnectorError("Add your n8n API key.")
+    return api_key
 
 
 def workflow_id_from_url(url: str) -> str:
@@ -154,7 +160,7 @@ def parse_workflow(wf: dict, base_url: str) -> dict:
 
 async def test(base_url: str, api_key: str, sandbox_url: str) -> dict:
     wid = workflow_id_from_url(sandbox_url)
-    async with client(headers={"X-N8N-API-KEY": api_key}) as c:
+    async with client(headers={"X-N8N-API-KEY": _key(api_key)}) as c:
         r = await c.get(f"{_base(base_url)}/api/v1/workflows/{wid}")
     if r.status_code != 200:
         raise explain(r, "n8n")
@@ -166,7 +172,7 @@ async def test(base_url: str, api_key: str, sandbox_url: str) -> dict:
 
 async def read(base_url: str, api_key: str, sandbox_url: str) -> dict:
     wid = workflow_id_from_url(sandbox_url)
-    async with client(headers={"X-N8N-API-KEY": api_key}) as c:
+    async with client(headers={"X-N8N-API-KEY": _key(api_key)}) as c:
         r = await c.get(f"{_base(base_url)}/api/v1/workflows/{wid}")
     if r.status_code != 200:
         raise explain(r, "n8n")
@@ -175,6 +181,11 @@ async def read(base_url: str, api_key: str, sandbox_url: str) -> dict:
 
 async def send(trigger: dict, text: str, session_id: str | None = None, history: list[dict] | None = None,
                extra: dict | None = None) -> str:
+    return (await send_full(trigger, text, session_id, history, extra))[0]
+
+
+async def send_full(trigger: dict, text: str, session_id: str | None = None, history: list[dict] | None = None,
+                    extra: dict | None = None) -> tuple[str, dict]:
     """One turn against the sandbox.
 
     Chat Trigger: n8n's chat protocol; the workflow's memory node keeps the thread.
@@ -198,16 +209,17 @@ async def send(trigger: dict, text: str, session_id: str | None = None, history:
     if r.status_code >= 400:
         raise explain(r, "Your sandbox")
     try:
-        return extract_reply(r.json())
+        data = r.json()
     except ValueError:
-        return r.text
+        return r.text, {}
+    return extract_reply(data), extract_fields(data)
 
 
 async def executions(base_url: str, api_key: str, workflow_id: str, limit: int = 250) -> list[dict]:
     """Past executions with data, turned into {session, user, agent} turns (best effort)."""
     out: list[dict] = []
     cursor = None
-    async with client(headers={"X-N8N-API-KEY": api_key}) as c:
+    async with client(headers={"X-N8N-API-KEY": _key(api_key)}) as c:
         while len(out) < limit:
             params = {"workflowId": workflow_id, "includeData": "true", "limit": 100}
             if cursor:
@@ -226,7 +238,22 @@ async def executions(base_url: str, api_key: str, workflow_id: str, limit: int =
     return out[:limit]
 
 
+_USER_KEYS = ("chatInput", "message", "text", "input", "query")
+_SESSION_KEYS = ("sessionId", "session_id", "chatId", "chat_id", "conversation_id", "jid", "phone", "from")
+_REPLY_KEYS = ("message", "text", "reply", "answer", "response", "output")
+
+
+def _first_str(d: dict, keys: tuple[str, ...]) -> str | None:
+    for k in keys:
+        if isinstance(d.get(k), str) and d[k].strip():
+            return d[k]
+    return None
+
+
 def _turn_from_execution(ex: dict) -> dict | None:
+    """One customer message and the agent's reply from an execution. Works for the Chat Trigger
+    (`chatInput`) and for Webhooks (`body.message` etc.), and for agents that return plain text or a
+    structured object like {message, status}. Skips Hone's own test traffic (session ids "hone-…")."""
     run = (((ex.get("data") or {}).get("resultData") or {}).get("runData")) or {}
     user, agent, session = None, None, None
     for runs in run.values():
@@ -234,10 +261,17 @@ def _turn_from_execution(ex: dict) -> dict | None:
             for branch in ((item.get("data") or {}).get("main") or []):
                 for row in branch or []:
                     j = row.get("json") or {}
-                    if user is None and isinstance(j.get("chatInput"), str):
-                        user, session = j["chatInput"], j.get("sessionId")
-                    if isinstance(j.get("output"), str):
-                        agent = j["output"]
-    if not user or not agent:
+                    if user is None:
+                        src = j.get("body") if isinstance(j.get("body"), dict) else j
+                        if "chatInput" in j or isinstance(j.get("body"), dict):
+                            user = _first_str(src, _USER_KEYS)
+                            sid = _first_str(src, _SESSION_KEYS)
+                            session = sid if sid is not None else session
+                    out = j.get("output")
+                    if isinstance(out, str) and out.strip():
+                        agent = out
+                    elif isinstance(out, dict) and (txt := _first_str(out, _REPLY_KEYS)):
+                        agent = txt
+    if not user or not agent or (session or "").startswith("hone-"):
         return None
     return {"session": session or ex.get("id"), "user": user, "agent": agent, "at": ex.get("startedAt")}

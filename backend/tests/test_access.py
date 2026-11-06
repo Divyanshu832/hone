@@ -40,3 +40,17 @@ def test_new_projects_start_private(monkeypatch):
         assert main._ownership() == {"ownerId": "a", "ownerName": "A", "orgId": "org1", "visibility": "private"}
     finally:
         main._me.reset(t)
+
+
+def test_cors_preflight_is_not_blocked(monkeypatch):
+    """A browser's preflight carries no sign-in; the access check must not answer it with 404."""
+    from fastapi.testclient import TestClient
+
+    from hone import store
+
+    monkeypatch.setattr(auth, "ENABLED", True)
+    store.put("project", "pf-1", {"id": "pf-1", "ownerId": "a", "orgId": "org1", "visibility": "private"}, "pf-1")
+    r = TestClient(main.app).options("/api/v1/projects/pf-1", headers={
+        "Origin": "http://localhost:3100", "Access-Control-Request-Method": "GET",
+        "Access-Control-Request-Headers": "authorization"})
+    assert r.status_code == 200
