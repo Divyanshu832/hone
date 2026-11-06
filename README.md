@@ -308,7 +308,7 @@ Tests fake every model call, so they're free and run in well under a second.
 
 - Personal data (emails, phone numbers, card and IBAN numbers, SSNs, postcodes, introduced names) is redacted before any
   conversation reaches a third-party model.
-- Keys live in tables only the server can read (row-level security on, no policies) and are never shown in full.
+- Keys are encrypted with **Supabase Vault**, readable only through two database functions the server's secret key can call, and never shown in full.
 - Uploaded code is read, never executed. Hone never edits or activates your workflows.
 - Compliance-style criteria are **flagged for review**, never presented as a legal verdict.
 

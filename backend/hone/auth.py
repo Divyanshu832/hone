@@ -225,8 +225,8 @@ async def accept(p: dict, token: str) -> dict:
 
 
 # ---------------- model keys ----------------
-# The organization's OpenRouter and TypeSafe keys, saved in hone_org_keys. The browser only ever gets them
-# masked; the full keys are used on the server for the organization's requests.
+# The organization's OpenRouter and TypeSafe keys, encrypted in Supabase Vault as `hone:org:<id>:<field>`.
+# The browser only ever gets them masked; the full keys are used on the server for the organization's requests.
 KEY_FIELDS = ("openrouter", "typesafe")
 _org_keys: dict[str, tuple[float, dict]] = {}
 
@@ -235,12 +235,22 @@ def _mask(k: str | None) -> str:
     return f"{k[:6]}…{k[-4:]}" if k else ""
 
 
+def _vault(org_id: str, field: str) -> str:
+    return f"hone:org:{org_id}:{field}"
+
+
+async def _rpc(fn: str, args: dict) -> Any:
+    r = await _http.post(f"{settings.supabase_url}/rest/v1/rpc/{fn}", json=args, headers=_rest_headers())
+    if r.status_code >= 400:
+        raise store.StoreError(f"Supabase error ({r.status_code}): {r.text[:200]}")
+    return r.json() if r.content else None
+
+
 async def org_keys_raw(org_id: str) -> dict:
     hit = _org_keys.get(org_id)
     if hit and hit[0] > time.time():
         return hit[1]
-    rows = await _rest("GET", "hone_org_keys", {"org_id": f"eq.{org_id}", "select": ",".join(KEY_FIELDS)})
-    keys = {f: (rows[0].get(f) if rows else None) or None for f in KEY_FIELDS}
+    keys = {f: (await _rpc("hone_vault_get", {"p_name": _vault(org_id, f)})) or None for f in KEY_FIELDS}
     _org_keys[org_id] = (time.time() + 60, keys)
     return keys
 
@@ -254,9 +264,8 @@ async def save_org_keys(p: dict, changes: dict[str, str | None]) -> dict:
     """Set or clear the organization's keys. Fields left out stay as they are; an empty value removes one."""
     if not p.get("org_id"):
         raise AuthError(403, "Create or join an organization first.")
-    row = {f: (changes[f] or "").strip() or None for f in KEY_FIELDS if f in changes}
-    if row:
-        await _rest("POST", "hone_org_keys", json={"org_id": p["org_id"], "updated_by": p["id"], **row},
-                    prefer="resolution=merge-duplicates,return=minimal")
+    for f in KEY_FIELDS:
+        if f in changes:
+            await _rpc("hone_vault_set", {"p_name": _vault(p["org_id"], f), "p_value": (changes[f] or "").strip()})
     _org_keys.pop(p["org_id"], None)
     return await org_keys(p)

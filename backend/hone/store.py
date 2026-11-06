@@ -7,8 +7,9 @@
 - **Memory** (public hosting with no database, or when Supabase can't be reached at startup): nothing is
   written to disk; everything is gone when the server restarts. The UI says so.
 
-Connection details (kind "secret": n8n / Retell API keys, endpoints) are stored like everything else,
-in hone_secrets on Supabase. Only the server's secret key can read that table.
+Connection details (kind "secret": n8n / Retell API keys, endpoints) go to Supabase Vault, encrypted at
+rest, under the name `hone:project:<id>:connection`. Only the server's secret key can read them, through
+the `hone_vault_get` / `hone_vault_set` functions (see schema.sql). Locally they stay in the SQLite file.
 
 Kinds: project, secret, agent, kb, dataset, criteria, run, item, label, gate, snapshot, recommendation.
 """
@@ -40,9 +41,8 @@ TABLES = {
     "dataset": "hone_datasets",
     "agent": "hone_agents",
     "gate": "hone_gates",
-    "secret": "hone_secrets",
 }
-LOCAL_ONLY: set[str] = set()
+VAULT = {"secret"}
 
 
 class StoreError(RuntimeError):
@@ -145,6 +145,13 @@ class _Supabase:
         rows = r.json()
         return rows[0]["doc"] if rows else None
 
+    # Supabase Vault: encrypted secrets by name, through two functions only the secret key may call.
+    def vault_set(self, name: str, value: str | None) -> None:
+        self._check(self.c.post(f"{self.base}/rpc/hone_vault_set", json={"p_name": name, "p_value": value or ""}))
+
+    def vault_get(self, name: str) -> str | None:
+        return self._check(self.c.post(f"{self.base}/rpc/hone_vault_get", json={"p_name": name})).json()
+
     def list_(self, kind: str, project_id: str | None) -> list[Any]:
         params = {"select": "doc", "order": "updated_at.desc", "limit": "1000"}
         if project_id is not None:
@@ -176,21 +183,30 @@ def _local():
 
 
 # ---------------- public API ----------------
+def _vault_name(kind: str, id: str) -> str:
+    return f"hone:project:{id}:connection"
+
+
 def put(kind: str, id: str, body: Any, project_id: str | None = None) -> None:
-    if _sb and kind not in LOCAL_ONLY:
+    if _sb and kind in VAULT:
+        _sb.vault_set(_vault_name(kind, id), json.dumps(body))
+    elif _sb:
         _sb.put(kind, id, body, project_id)
     else:
         _local()[0](kind, id, body, project_id)
 
 
 def get(kind: str, id: str) -> Any | None:
-    if _sb and kind not in LOCAL_ONLY:
+    if _sb and kind in VAULT:
+        raw = _sb.vault_get(_vault_name(kind, id))
+        return json.loads(raw) if raw else None
+    if _sb:
         return _sb.get(kind, id)
     return _local()[1](kind, id)
 
 
 def list_(kind: str, project_id: str | None = None) -> list[Any]:
-    if _sb and kind not in LOCAL_ONLY:
+    if _sb and kind not in VAULT:
         return _sb.list_(kind, project_id)
     return _local()[2](kind, project_id)
 

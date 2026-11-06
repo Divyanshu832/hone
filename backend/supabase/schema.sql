@@ -214,25 +214,51 @@ alter table hone_projects add column if not exists visibility text
 create index if not exists hone_projects_owner on hone_projects(owner_id);
 create index if not exists hone_projects_org on hone_projects(org_id);
 
--- ---------------- Keys ----------------
--- Connection details per project (n8n / Retell API keys, endpoints) and model keys per organization
--- (OpenRouter, TypeSafe). RLS on with no policies: only the server's secret key reads or writes them.
-create table if not exists hone_secrets (
-  id text primary key, project_id text not null references hone_projects(id) on delete cascade,
-  doc jsonb not null, created_at timestamptz not null default now(), updated_at timestamptz not null default now()
-);
-create table if not exists hone_org_keys (
-  org_id uuid primary key references hone_orgs(id) on delete cascade,
-  openrouter text, typesafe text,
-  updated_by uuid references auth.users(id) on delete set null,
-  created_at timestamptz not null default now(), updated_at timestamptz not null default now()
-);
-do $$
-declare t text;
+-- Earlier plain-text key tables, replaced by Supabase Vault below.
+drop table if exists hone_secrets;
+drop table if exists hone_org_keys;
+
+-- ---------------- Supabase Vault (replaces plain-text keys) ----------------
+-- Keys are encrypted at rest by Supabase Vault. Hone's tables hold no key at all: each secret lives in
+-- vault.secrets under a name, and only these two functions read or write it. They run as their owner
+-- (security definer) and only the server's secret key (service_role) may call them.
+--   hone:org:<org id>:openrouter | hone:org:<org id>:typesafe   model keys, per organization
+--   hone:project:<project id>:connection                        n8n / Retell connection (JSON), per project
+create or replace function public.hone_vault_set(p_name text, p_value text) returns void
+language plpgsql security definer set search_path = '' as $$
+declare sid uuid;
 begin
-  foreach t in array array['hone_secrets', 'hone_org_keys'] loop
-    execute format('drop trigger if exists %I_touch on %I', t, t);
-    execute format('create trigger %I_touch before update on %I for each row execute function hone_touch()', t, t);
-    execute format('alter table %I enable row level security', t);
-  end loop;
+  if p_name not like 'hone:%' then raise exception 'not a Hone secret'; end if;
+  select id into sid from vault.secrets where name = p_name;
+  if p_value is null or p_value = '' then
+    delete from vault.secrets where id = sid;
+  elsif sid is null then
+    perform vault.create_secret(p_value, p_name);
+  else
+    perform vault.update_secret(sid, p_value);
+  end if;
 end $$;
+
+create or replace function public.hone_vault_get(p_name text) returns text
+language sql security definer set search_path = '' stable as $$
+  select decrypted_secret from vault.decrypted_secrets where name = p_name and p_name like 'hone:%';
+$$;
+
+revoke all on function public.hone_vault_set(text, text) from public, anon, authenticated;
+revoke all on function public.hone_vault_get(text) from public, anon, authenticated;
+grant execute on function public.hone_vault_set(text, text) to service_role;
+grant execute on function public.hone_vault_get(text) to service_role;
+
+-- Deleting an organization or a project deletes its secrets too.
+create or replace function public.hone_vault_cleanup() returns trigger
+language plpgsql security definer set search_path = '' as $$
+begin
+  delete from vault.secrets
+  where name like (case when tg_table_name = 'hone_orgs' then 'hone:org:' else 'hone:project:' end) || old.id || ':%';
+  return old;
+end $$;
+revoke all on function public.hone_vault_cleanup() from public, anon, authenticated;
+drop trigger if exists hone_orgs_vault on hone_orgs;
+create trigger hone_orgs_vault after delete on hone_orgs for each row execute function public.hone_vault_cleanup();
+drop trigger if exists hone_projects_vault on hone_projects;
+create trigger hone_projects_vault after delete on hone_projects for each row execute function public.hone_vault_cleanup();

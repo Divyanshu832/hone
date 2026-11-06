@@ -6,9 +6,11 @@
 *.pem
 *.key
 
-# ---- Notes and docs kept local (only the README is published) ----
+# ---- Notes and docs kept local (only the README and future plans are published) ----
 *.md
 !/README.md
+!/future-plans/
+!/future-plans/*.md
 reports/
 research_notes/
 .claude/
