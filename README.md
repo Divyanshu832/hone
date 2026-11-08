@@ -18,6 +18,7 @@ the change worked.
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?style=flat-square&logo=supabase&logoColor=white)](https://supabase.com/)
 [![Tests](https://img.shields.io/badge/tests-32%20passing-477255?style=flat-square)](#-development)
+[![License](https://img.shields.io/badge/license-PolyForm%20Noncommercial-e2ab4c?style=flat-square)](LICENSE)
 
 **Works with**
 
@@ -324,8 +325,18 @@ Tests fake every model call, so they're free and run in well under a second.
 - [ ] Prompt optimizer that proposes and tests edits automatically
 - [ ] Retrieval traces for exact knowledge-base triage
 
+## 📄 License
+
+Hone is source-available under the [PolyForm Noncommercial License 1.0.0](LICENSE).
+
+- ✅ **Free** for personal projects, study, research, hobby use, and for charities, schools and public institutions.
+- ✅ You can read, run, change and share it, as long as you keep the license with it.
+- ❌ **No commercial use**: you can't sell it, offer it as a paid service, or use it in a commercial product.
+
+Want to use Hone commercially? [Get in touch](https://github.com/Divyanshu832).
+
 ---
 
 <div align="center">
-<sub>Built by <a href="https://github.com/Divyanshu832">Divyanshu Shekhar</a>. Private repository, all rights reserved.</sub>
+<sub>Built by <a href="https://github.com/Divyanshu832">Divyanshu Shekhar</a>. Free for noncommercial use under the <a href="LICENSE">PolyForm Noncommercial License</a>.</sub>
 </div>
